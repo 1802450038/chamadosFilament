@@ -6,11 +6,13 @@ use App\Filament\Resources\ComputerResource\Pages;
 use App\Filament\Resources\ComputerResource\RelationManagers;
 use App\Models\Computer;
 use Filament\Forms;
+use Filament\Forms\Components\Grid;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\Relationship;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ComputerResource extends Resource
@@ -27,29 +29,39 @@ class ComputerResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('patrimony')
-                    ->required()
-                    ->label('Patrimonio')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('brand')
-                    ->required()
-                    ->label('Marca')
-                    ->maxLength(255),
-                Forms\Components\FileUpload::make('image')
-                    ->image()
-                    ->label('Imagem')
-                    ->required(),
-                Forms\Components\TextInput::make('description')
-                    ->label('Descrição')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('user.name')
+                Grid::make()->schema([
+                    Forms\Components\TextInput::make('patrimony')
+                        ->label('Patrimonio')
+                        ->placeholder('Codigo do patrimonio ou alguma identificação')
+                        ->required()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('brand')
+                        ->label('Marca')
+                        ->required()
+                        ->maxLength(255),
+                ])->columns(2),
+                Grid::make()->schema([
+                    Forms\Components\FileUpload::make('image')
+                        ->label('Imagem')
+                        ->image()
+                        ->required(),
+                    Forms\Components\RichEditor::make('description')
+                        ->label('Descrição')
+                        ->placeholder("Digite a especificação ou alguma informação util, como senha ou se contem alguma peça importante")
+                        ->required()
+                        ->maxLength(255),
+                ])->columns(1),
+                Forms\Components\Select::make('user_id')
                     ->label('Usuario')
+                    ->relationship('user', 'name')
                     ->required(),
-                Forms\Components\TextInput::make('location.sector')
+                Forms\Components\Select::make('location.sector')
                     ->label('Localização')
-                    ->required()
-                    ->numeric(),
+                    ->relationship('location', 'sector')
+                    ->searchable(['building', 'sector'])
+                    ->preload()
+                    ->optionsLimit(20)
+
             ]);
     }
 
@@ -61,6 +73,7 @@ class ComputerResource extends Resource
                     ->label('Imagem')
                     ->circular(),
                 Tables\Columns\TextColumn::make('patrimony')
+                    ->label('Patrimonio')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('brand')
                     ->label('Marca')
@@ -75,11 +88,13 @@ class ComputerResource extends Resource
                     ->label('Local')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('Data registro')
                     ->dateTime()
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Data atualização')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
