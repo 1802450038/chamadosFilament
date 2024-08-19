@@ -15,12 +15,12 @@ return new class extends Migration
     {
         Schema::create('computers', function (Blueprint $table) {
             $table->id();
+            $table->foreignIdFor(User::class);
             $table->timestamps();
             $table->string("patrimony");
             $table->string("brand");
-            $table->string("image");
-            $table->string("description");
-            $table->foreignIdFor(User::class);
+            $table->string("image")->nullable();
+            $table->string("description")->nullable();
             $table->foreignIdFor(Location::class);
         });
     }

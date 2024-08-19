@@ -15,10 +15,14 @@ return new class extends Migration
     {
         Schema::create('service_orders', function (Blueprint $table) {
             $table->id();
+            $table->foreignIdFor(User::class); // Quem registrou
             $table->foreignIdFor(Computer::class);
-            $table->foreignIdFor(User::class); // Tec 1
-            $table->foreignIdFor(User::class)->nullable(); // Tec 2
-            $table->foreignIdFor(User::class)->nullable(); // Tec 3
+            $table->unsignedBigInteger('tec_1')->nullable();
+            $table->unsignedBigInteger('tec_2')->nullable();
+            $table->unsignedBigInteger('tec_3')->nullable();
+            $table->foreign('tec_1')->references('id')->on('users');
+            $table->foreign('tec_2')->references('id')->on('users');
+            $table->foreign('tec_3')->references('id')->on('users');
             $table->string('defect');
             $table->string('repair_note')->nullable()->default('Não informado');
             $table->timestamps();

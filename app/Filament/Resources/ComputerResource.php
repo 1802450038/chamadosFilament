@@ -19,10 +19,10 @@ class ComputerResource extends Resource
 {
     protected static ?string $model = Computer::class;
 
-    protected static ?string $modelLabel = 'Computador';
-    protected static ?string $pluralModelLabel = 'Computadores';
 
     protected static ?string $navigationIcon = 'heroicon-o-computer-desktop';
+    protected static ?string $modelLabel = 'Computador';
+    protected static ?string $pluralModelLabel = 'Computadores';
     // protected static ?string $navigationLabel = 'Computadores';
 
     public static function form(Form $form): Form
@@ -43,23 +43,19 @@ class ComputerResource extends Resource
                 Grid::make()->schema([
                     Forms\Components\FileUpload::make('image')
                         ->label('Imagem')
-                        ->image()
-                        ->required(),
+                        ->image(),
                     Forms\Components\RichEditor::make('description')
                         ->label('Descrição')
                         ->placeholder("Digite a especificação ou alguma informação util, como senha ou se contem alguma peça importante")
-                        ->required()
                         ->maxLength(255),
                 ])->columns(1),
-                Forms\Components\Select::make('user_id')
-                    ->label('Usuario')
-                    ->relationship('user', 'name')
-                    ->required(),
-                Forms\Components\Select::make('location.sector')
+                Forms\Components\Hidden::make('user_id')->default(auth()->id())->label('Registrado por'),
+                Forms\Components\Select::make('location_id')
                     ->label('Localização')
                     ->relationship('location', 'sector')
-                    ->searchable(['building', 'sector'])
+                    ->searchable('sector')
                     ->preload()
+                    ->required()
                     ->optionsLimit(20)
 
             ]);
@@ -74,18 +70,24 @@ class ComputerResource extends Resource
                     ->circular(),
                 Tables\Columns\TextColumn::make('patrimony')
                     ->label('Patrimonio')
+                    ->icon('heroicon-o-qr-code')
+                    ->badge()
+                    ->color('success')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('brand')
                     ->label('Marca')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('description')
                     ->label('Descrição')
+                    ->html()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('user.name')
-                    ->label('Usuario')
+                    ->label('Registrado por')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('location.sector')
                     ->label('Local')
+                    ->color('primary')
+                    ->icon('heroicon-o-map-pin')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Data registro')

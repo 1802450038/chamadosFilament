@@ -20,9 +20,12 @@ return new class extends Migration
             $table->foreignIdFor(User::class); //Usuario que registrou
             $table->string('issue'); //Problema
             $table->string('request')->nullable()->default('Não informado'); //Quem solicitou
-            $table->foreignIdFor(User::class)->nullable(); // Id do tecnico 1
-            $table->foreignIdFor(User::class)->nullable(); // Id do tecnico 2
-            $table->foreignIdFor(User::class)->nullable(); // Id do tecnico 3
+            $table->unsignedBigInteger('tec_1')->nullable();
+            $table->unsignedBigInteger('tec_2')->nullable();
+            $table->unsignedBigInteger('tec_3')->nullable();
+            $table->foreign('tec_1')->references('id')->on('users');
+            $table->foreign('tec_2')->references('id')->on('users');
+            $table->foreign('tec_3')->references('id')->on('users');
             $table->date('scheduling')->nullable();
             $table->foreignIdFor(Location::class);
             $table->timestamps();

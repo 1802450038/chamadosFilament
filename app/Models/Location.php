@@ -11,7 +11,18 @@ class Location extends Model
 
     protected $guarded = ['id'];
 
-    public function computers(){
-        return $this->hasMany(Computer::class);
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function call()
+    {
+        return $this->hasMany(Call::class);
+    }
+
+    public function address()
+    {
+        return $this->belongsTo(Address::class);
     }
 }
