@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Computer;
+use App\Models\Call;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -13,12 +13,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('service_orders', function (Blueprint $table) {
+        Schema::create('user_call', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(User::class); // Quem registrou
-            $table->foreignIdFor(Computer::class);
-            $table->string('defect');
-            $table->string('repair_note')->nullable()->default('Não informado');
+            $table->foreignIdFor(Call::class);
+            $table->foreignIdFor(User::class);
             $table->timestamps();
         });
     }
@@ -28,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('service_orders');
+        Schema::dropIfExists('user_call');
     }
 };

@@ -24,18 +24,9 @@ class Call extends Model
         return $this->belongsTo(Location::class);
     }
 
-    public function users()
+    public function tecs()
     {
-      return "teste users";
+      return $this->belongsToMany(User::class, 'user_call')->withTimestamps();
     }
 
-    public function tecs(){
-        return '';
-        // return $this->belongsToMany(User::class, 'users','tec_1');
-    }
-
-    public function tec($tec)
-    {
-        return User::find($tec)->name;
-    }
 }

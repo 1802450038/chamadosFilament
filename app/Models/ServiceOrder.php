@@ -24,8 +24,7 @@ class ServiceOrder extends Model
         return $this->belongsTo(Location::class);
     }
 
-    public function tec($tec)
-    {
-        return User::find($tec)->name;
+    public function tecs(){
+        return $this->belongsToMany(User::class, 'user_os')->withTimestamps();
     }
 }

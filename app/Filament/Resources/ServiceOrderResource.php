@@ -34,24 +34,12 @@ class ServiceOrderResource extends Resource
                     ->preload()
                     ->optionsLimit(20)
                     ->searchable(),
-                Forms\Components\Select::make('tec_1')
-                    ->label('Tecnico 1')
-                    ->searchable()
+                Forms\Components\Select::make('tecs')
+                    ->label('Tecnicos')
+                    ->relationship('tecs', 'name')
                     ->preload()
-                    ->optionsLimit(20)
-                    ->relationship('user', 'name'),
-                Forms\Components\Select::make('tec_2')
-                    ->label('Tecnico 2')
-                    ->searchable()
-                    ->preload()
-                    ->optionsLimit(20)
-                    ->relationship('user', 'name'),
-                Forms\Components\Select::make('tec_3')
-                    ->label('Tecnico 3')
-                    ->searchable()
-                    ->preload()
-                    ->optionsLimit(20)
-                    ->relationship('user', 'name'),
+                    ->multiple()
+                    ->maxItems(3),
                 Forms\Components\TextInput::make('defect')
                     ->label('Defeito')
                     ->maxLength(255),
@@ -66,7 +54,7 @@ class ServiceOrderResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('user_id')
+                Tables\Columns\TextColumn::make('user.name')
                     ->label('Registrado por')
                     ->numeric()
                     ->sortable()
@@ -74,15 +62,9 @@ class ServiceOrderResource extends Resource
                 Tables\Columns\TextColumn::make('computer.patrimony')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('tec_1')
-                    ->label('Usuarios')
+                Tables\Columns\TextColumn::make('tecs.name')
+                    ->label('Tecnicos')
                     ->badge()
-                    ->color('success')
-                    ->formatStateUsing(function ($state, ServiceOrder $os) {
-                        return (isset($os->tec_1) ? $os->tec($os->tec_1) : '') . " " .
-                            (isset($os->tec_2) ? $os->tec($os->tec_2) : '') . " " .
-                            (isset($os->tec_3) ? $os->tec($os->tec_3) : '');
-                    })
                     ->searchable(),
                 Tables\Columns\TextColumn::make('defect')
                     ->label('Defeito')
@@ -92,12 +74,12 @@ class ServiceOrderResource extends Resource
                     ->html()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
-                ->label('Criado em')
+                    ->label('Criado em')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
-                ->label('Editado em')
+                    ->label('Editado em')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

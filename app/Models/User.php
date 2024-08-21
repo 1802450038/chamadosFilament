@@ -68,11 +68,6 @@ class User extends Authenticatable implements FilamentUser , HasName
         return $this->hasMany(Location::class);
     }
 
-    public function calls()
-    {
-        return $this->hasMany(Call::class);
-    }
-
     public function printers()
     {
         return $this->hasMany(Printer::class);
@@ -102,5 +97,13 @@ class User extends Authenticatable implements FilamentUser , HasName
     public function getIdPanel(): string
     {
         return $this->id;
+    }
+
+    public function calls(){
+        return $this->belongsToMany(Call::class, 'user_call')->withTimestamps();
+    }
+
+    public function orders(){
+        return $this->belongsToMany(ServiceOrder::class, 'user_os')->withTimestamps();
     }
 }

@@ -30,7 +30,8 @@ class CallResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Hidden::make('user_id')->default(auth()->id()),
+                Forms\Components\Hidden::make('user_id')->default(auth()->id())
+                ->label('Registrado por'),
                 Forms\Components\TextInput::make('issue')
                     ->label('Problema')
                     ->required()
@@ -39,24 +40,6 @@ class CallResource extends Resource
                     ->label('Solicitante')
                     ->maxLength(255)
                     ->default('Não informado'),
-                Forms\Components\Select::make('tec_1')
-                    ->label('Tecnico 1')
-                    ->relationship('user', 'name')
-                    ->searchable()
-                    ->preload()
-                    ->optionsLimit(20),
-                Forms\Components\Select::make('tec_2')
-                    ->label('Tecnico 2')
-                    ->relationship('user', 'name')
-                    ->searchable()
-                    ->preload()
-                    ->optionsLimit(20),
-                Forms\Components\Select::make('tec_3')
-                    ->label('Tecnico 3')
-                    ->relationship('user', 'name')
-                    ->searchable()
-                    ->preload()
-                    ->optionsLimit(20),
                 Forms\Components\DatePicker::make('scheduling')
                     ->label('Agendamento')
                     ->default(Date(now())),
@@ -67,6 +50,12 @@ class CallResource extends Resource
                     ->preload()
                     ->optionsLimit(20)
                     ->required(),
+                Forms\Components\Select::make('tecs')
+                    ->label('Tecnicos')
+                    ->relationship('tecs', 'name')
+                    ->preload()
+                    ->multiple()
+                    ->maxItems(3)
             ]);
     }
 
@@ -75,22 +64,16 @@ class CallResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('user.name')
-                    ->label('Criado por')
+                    ->label('Registrado por')
                     ->numeric()
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('issue')
                     ->label('Problema')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('tec_1')
-                    ->label('Usuarios')
-                    ->color('success')
-
-                    ->formatStateUsing(function ($state, Call $call) {
-                        return (isset($call->tec_1) ? $call->tec($call->tec_1) : 'não') . " " .
-                            (isset($call->tec_2) ? $call->tec($call->tec_2) : 'não') . " " .
-                            (isset($call->tec_3) ? $call->tec($call->tec_3) : 'não');
-                    })
+                Tables\Columns\TextColumn::make('tecs.name')
+                    ->label('Tecnicos')
+                    ->badge()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('request')
                     ->label('Solicitante')
