@@ -18,11 +18,11 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('occupation')->default('tecnico');
-            $table->boolean('status')->default(true);
-            $table->boolean('theme')->default(true);
-            $table->string('color')->default('BLUE');
             $table->string('password');
-            $table->boolean('admin')->default(true);
+            $table->string('color')->nullable()->default('BLUE');
+            $table->boolean('status')->nullable()->default(true);
+            $table->boolean('theme')->nullable()->default(true);
+            $table->boolean('admin')->nullable()->default(false);
             $table->rememberToken();
             $table->timestamps();
         });

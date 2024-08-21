@@ -21,55 +21,77 @@ class UserResource extends Resource
     protected static ?string $modelLabel = 'Usuario';
     protected static ?string $pluralModelLabel = 'Usuarios';
 
-  
+
     public static function form(Form $form): Form
     {
-        
+
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->label('Nome')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\FileUpload::make('picture')
-                    ->label('Foto'),
-                Forms\Components\TextInput::make('email')
-                    ->label('Email')
-                    ->email()
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('occupation')
-                    ->label('Cargo')
-                    ->required()
-                    ->maxLength(255)
-                    ->default('tecnico'),
-                Forms\Components\Toggle::make('status')
-                    ->label('Ativo')
-                    
-                    ->required(),
-                Forms\Components\Toggle::make('theme')
-                    ->label('Tema')
-                    ->required(),
-                Forms\Components\Select::make('color')
-                    ->label('Cor do painel')
-                    ->required()
-                    ->options([
-                        'BLUE' => 'AZUL',
-                        'RED' => 'VERMELHO',
-                        'GREEN' => 'VERDE',
-                        'PINK' => 'ROSA',
-                        'ORANGE' => 'LARANJA'
-                    ]
-                    ),
-                Forms\Components\TextInput::make('password')
-                    ->label('Senha')
-                    ->password()
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\Toggle::make('admin')
-                    ->label('Admin')
-                    ->required()
-                    ->default(false),
+                Forms\Components\Grid::make()->schema([
+                    Forms\Components\Section::make('Dados')->description('Informações sobre o usuario')->schema([
+                        Forms\Components\TextInput::make('name')
+                            ->label('Nome')
+                            ->required()
+                            ->maxLength(255),
+
+                        Forms\Components\TextInput::make('email')
+                            ->label('Email')
+                            ->email()
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('occupation')
+                            ->label('Cargo')
+                            ->required()
+                            ->maxLength(255)
+                            ->default('tecnico'),
+                        Forms\Components\Hidden::make('password')
+                            ->label('Senha')
+                            ->required()
+                            ->default(env('CITY') . '123'),
+                        Forms\Components\Toggle::make('admin')
+                            ->label('Admin')
+                            ->required()
+                            ->default(false),
+                    ])->columnSpan(1),
+                    Forms\Components\Grid::make()->schema([
+
+                        Forms\Components\Section::make('Foto')->description('Foto de perfil do usuario')->schema([
+                            Forms\Components\FileUpload::make('picture')
+                                ->label('Foto'),
+                        ]),
+                        Forms\Components\Section::make('Personalização')->description('Preferencias do usuario')->schema([
+                            Forms\Components\Grid::make()->schema([
+                                Forms\Components\Radio::make('theme')
+                                    ->label('Tema')
+                                    ->boolean()
+                                    ->default(1)
+                                    ->options([
+                                        '1' => 'Claro',
+                                        '0' => 'Escuro',
+                                    ])
+                                    ->descriptions([
+                                        '1' => 'Tema claro.',
+                                        '0' => 'Tema escuro.',
+                                    ])->inline()
+                                    ->inlineLabel(false),
+                                Forms\Components\Select::make('color')
+                                    ->label('Cor do painel')
+                                    ->required()
+                                    ->options(
+                                        [
+                                            'BLUE' => 'AZUL',
+                                            'RED' => 'VERMELHO',
+                                            'GREEN' => 'VERDE',
+                                            'PINK' => 'ROSA',
+                                            'ORANGE' => 'LARANJA'
+                                        ]
+                                    ),
+                            ])->columns(2),
+
+
+                        ]),
+                    ])->columnSpan(1)
+                ])->columns(2),
             ]);
     }
 

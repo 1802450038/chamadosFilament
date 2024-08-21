@@ -23,33 +23,48 @@ class LocationResource extends Resource
     protected static ?string $modelLabel = 'Local';
     protected static ?string $pluralModelLabel = 'Localizações';
     protected static ?string $navigationIcon = 'heroicon-o-map-pin';
-    // protected static ?string $navigationLabel = 'Localizações';
+    protected static ?string $slug = 'localizacoes'; // URL /ROTA
+    protected static ?string $navigationGroup = 'Endereços';
+
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\Hidden::make('user_id')->default(auth()->id()),
-                Forms\Components\Select::make('address_id')
-                    ->label('Endereço')
-                    ->relationship('address', 'building')
-                    ->searchable()
-                    ->preload()
-                    ->optionsLimit(20)
-                    ->required(),
-                Forms\Components\TextInput::make('sector')
-                    ->required()
-                    ->label('Setor')
-                    ->maxLength(255),
-                Forms\Components\RichEditor::make('sector_location')
-                    ->required()
-                    ->label('Localização do setor')
-                    ->default('Não informado')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('phone')
-                    ->required()
-                    ->label('Telefone')
-                    ->default('Não informado')
-                    ->maxLength(255),
+                Forms\Components\Section::make('Endereço')->description('Endereço da localidade')
+                    ->schema([
+                        Forms\Components\Select::make('address_id')
+                            ->label('Endereço')
+                            ->relationship('address', 'building')
+                            ->searchable()
+                            ->preload()
+                            ->optionsLimit(20)
+                            ->required(),
+                    ]),
+                Forms\Components\Section::make('Localidade')->description('Informações da localidade')
+                    ->schema([
+                        Forms\Components\TextInput::make('sector')
+                            ->required()
+                            ->label('Setor')
+                            ->maxLength(255),
+                            Forms\Components\TextInput::make('phone')
+                            ->required()
+                            ->tel()
+                            ->label('Telefone')
+                            ->default('Não informado')
+                            ->maxLength(255),
+                        Forms\Components\RichEditor::make('sector_location')
+                            ->required()
+                            ->label('Localização do setor')
+                            ->default('Não informado')
+                            ->maxLength(255)->columnSpan(2),
+                            
+                    ])->columns(2)
+
+
+
+
             ]);
     }
 
@@ -62,18 +77,18 @@ class LocationResource extends Resource
                     ->color('primary')
                     ->icon('heroicon-o-map')
                     ->url(
-                       function(Location $record): string{
-                        // print($record->address_id);
-                        // route('address.edit');
-                        return 'addresses/'.$record->address_id.'/edit';
-                       }
+                        function (Location $record): string {
+                            // print($record->address_id);
+                            // route('address.edit');
+                            return 'addresses/' . $record->address_id . '/edit';
+                        }
                     )
                     ->searchable(),
                 Tables\Columns\TextColumn::make('sector')
                     ->label('Setor')
                     ->color('gray')
                     ->icon('heroicon-o-map-pin')
-            
+
                     ->searchable(),
                 Tables\Columns\TextColumn::make('sector_location')
                     ->label('Localização')

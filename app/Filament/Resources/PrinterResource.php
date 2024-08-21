@@ -20,38 +20,56 @@ class PrinterResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-printer';
     protected static ?string $modelLabel = 'Impressora';
     protected static ?string $pluralModelLabel = 'Impressoras';
+    protected static ?string $slug = 'impressoras';
+    protected static ?string $navigationGroup = 'Equipamentos';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Hidden::make('user_id')->default(auth()->id())
-                    ->label('usuario'),
-                Forms\Components\Select::make('location_id')
-                    ->label('Local')
-                    ->relationship('location', 'sector')
-                    ->searchable()
-                    ->optionsLimit(20)
-                    ->preload()
-                    ->required(),
-                Forms\Components\TextInput::make('brand')
-                    ->label('Marca')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('ip')
-                    ->label('IP')
-                    ->maxLength(255)
-                    ->default('DHCP'),
-                Forms\Components\Toggle::make('colored')
-                    ->label('Colorida')
-                    ->onIcon('heroicon-o-check')
-                    ->offIcon('heroicon-o-x-mark')
-                    ->onColor('success')
-                    ->offColor('danger'),
-                Forms\Components\TextInput::make('identifier')
-                    ->label('Identificador')
-                    ->maxLength(255)
-                    ->default('Sem contrato'),
+                Forms\Components\Grid::make()->schema([
+                    Forms\Components\Section::make('Local')->description('Informações sobre o local da impressora')->schema([
+                        Forms\Components\Hidden::make('user_id')->default(auth()->id())
+                            ->label('usuario'),
+                        Forms\Components\Select::make('location_id')
+                            ->label('Local')
+                            ->relationship('location', 'sector')
+                            ->searchable()
+                            ->optionsLimit(20)
+                            ->preload()
+                            ->required(),
+                    ]),
+                    Forms\Components\Section::make('Impressora')->description('Informações sobre a impressora')->schema([
+                        Forms\Components\TextInput::make('brand')
+                            ->label('Marca')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('ip')
+                            ->label('IP')
+                            ->maxLength(255)
+                            ->default('DHCP'),
+                        Forms\Components\Radio::make('colored')
+                            ->label('Colorida')
+                            ->boolean()
+                            ->options([
+                                '1' => 'Colorida',
+                                '0' => 'Preto e branco',
+                            ])
+                            ->descriptions([
+                                '1' => 'Tinta colorida.',
+                                '0' => 'Apenas preto e branco.',
+                            ])->inline()
+                            ->inlineLabel(false),
+              
+                        Forms\Components\TextInput::make('identifier')
+                            ->label('Identificador')
+                            ->maxLength(255)
+                            ->default('Sem contrato'),
+                    ])->columns(2)
+
+                ]),
+
+
             ]);
     }
 
@@ -78,7 +96,7 @@ class PrinterResource extends Resource
                     ->searchable(),
                 Tables\Columns\IconColumn::make('colored')
                     ->label('Colorida')
-                    
+
                     ->boolean(),
                 Tables\Columns\TextColumn::make('identifier')
                     ->label('Itendificador')

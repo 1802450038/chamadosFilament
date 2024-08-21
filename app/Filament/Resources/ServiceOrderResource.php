@@ -20,21 +20,26 @@ class ServiceOrderResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-wrench-screwdriver';
     protected static ?string $modelLabel = 'Ordem de serviço';
     protected static ?string $pluralModelLabel = 'Ordens de serviço';
+    protected static ?string $slug = 'ordens-servico';
+    protected static ?string $navigationGroup = 'Serviços';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Hidden::make('user_id')->default(auth()->id())
-                    ->label('Registrado por'),
-                Forms\Components\Select::make('computer_id')
-                    ->relationship('computer', 'patrimony')
-                    ->label('Computador')
-                    ->required()
-                    ->preload()
-                    ->optionsLimit(20)
-                    ->searchable(),
-                Forms\Components\Select::make('tecs')
+                Forms\Components\Section::make('Computador')->description('Informações sobre o computador')->schema([
+                    Forms\Components\Hidden::make('user_id')->default(auth()->id())
+                        ->label('Registrado por'),
+                    Forms\Components\Select::make('computer_id')
+                        ->relationship('computer', 'patrimony')
+                        ->label('Computador')
+                        ->required()
+                        ->preload()
+                        ->optionsLimit(20)
+                        ->searchable(),
+                ]),
+                Forms\Components\Section::make('Os')->description('Informações sobre a ordem de serviço')->schema([
+                    Forms\Components\Select::make('tecs')
                     ->label('Tecnicos')
                     ->relationship('tecs', 'name')
                     ->preload()
@@ -46,8 +51,11 @@ class ServiceOrderResource extends Resource
                 Forms\Components\RichEditor::make('repair_note')
                     ->label('Nota')
                     ->maxLength(255)
-                    ->default('Não informado'),
-            ]);
+                    ->default('Não informado')->columnSpan(2),
+                ])->columns(2),
+
+               
+            ])->columns(2);
     }
 
     public static function table(Table $table): Table

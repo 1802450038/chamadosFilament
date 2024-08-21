@@ -23,41 +23,57 @@ class ComputerResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-computer-desktop';
     protected static ?string $modelLabel = 'Computador';
     protected static ?string $pluralModelLabel = 'Computadores';
-    // protected static ?string $navigationLabel = 'Computadores';
+    protected static ?string $slug = 'computadores';
+    protected static ?string $navigationGroup = 'Equipamentos';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Grid::make()->schema([
-                    Forms\Components\TextInput::make('patrimony')
-                        ->label('Patrimonio')
-                        ->placeholder('Codigo do patrimonio ou alguma identificação')
-                        ->required()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('brand')
-                        ->label('Marca')
-                        ->required()
-                        ->maxLength(255),
-                ])->columns(2),
-                Grid::make()->schema([
-                    Forms\Components\FileUpload::make('image')
-                        ->label('Imagem')
-                        ->image(),
-                    Forms\Components\RichEditor::make('description')
-                        ->label('Descrição')
-                        ->placeholder("Digite a especificação ou alguma informação util, como senha ou se contem alguma peça importante")
-                        ->maxLength(255),
-                ])->columns(1),
-                Forms\Components\Hidden::make('user_id')->default(auth()->id())->label('Registrado por'),
-                Forms\Components\Select::make('location_id')
-                    ->label('Localização')
-                    ->relationship('location', 'sector')
-                    ->searchable('sector')
-                    ->preload()
-                    ->required()
-                    ->optionsLimit(20)
 
+                Grid::make()->schema([
+
+
+                    Forms\Components\Section::make('Computador')->description('Informações sobre o computador')->schema([
+                        Grid::make()->schema([
+                            Forms\Components\Hidden::make('user_id')->default(auth()->id())->label('Registrado por'),
+                            Forms\Components\TextInput::make('patrimony')
+                                ->label('Patrimonio')
+                                ->placeholder('Codigo do patrimonio ou alguma identificação')
+                                ->required()
+                                ->maxLength(255),
+                            Forms\Components\TextInput::make('brand')
+                                ->label('Marca')
+                                ->required()
+                                ->placeholder("Hp, Dell, Pc Top...")
+                                ->maxLength(255),
+                        ])->columns(2),
+                    ])->columnSpan(1),
+
+                    Forms\Components\Section::make('Local')->description('Informações sobre o local do computador')->schema([
+                        Grid::make()->schema([
+                            Forms\Components\Select::make('location_id')
+                                ->label('Localização')
+                                ->relationship('location', 'sector')
+                                ->searchable('sector')
+                                ->preload()
+                                ->required()
+                                ->optionsLimit(20)
+                        ])->columns(1),
+                    ])->columnSpan(1),
+                    Forms\Components\Section::make('Extra')->description('Informações adicionais sobre o computador')->schema([
+                        Grid::make()->schema([
+                            Forms\Components\FileUpload::make('image')
+                                ->label('Imagem')
+                                ->image(),
+                            Forms\Components\RichEditor::make('description')
+                                ->label('Descrição')
+                                ->placeholder("Digite a especificação ou alguma informação util, como senha ou se contem alguma peça importante")
+                                ->maxLength(255),
+                        ])->columns(2),
+                    ])->columnSpan(2),
+             
+                ])->columns(2)
             ]);
     }
 

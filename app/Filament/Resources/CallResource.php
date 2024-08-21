@@ -4,18 +4,11 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\CallResource\Pages;
 use App\Models\Call;
-use App\Models\User;
-use Filament\Facades\Filament;
 use Filament\Forms;
 use Filament\Forms\Form;
-use Filament\Models\Contracts\FilamentUser;
-use Filament\Models\Contracts\HasName;
-use Filament\Panel;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Http\Middleware\TrustProxies;
-use Illuminate\Support\Facades\Date;
 
 class CallResource extends Resource
 {
@@ -23,6 +16,8 @@ class CallResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-megaphone';
     protected static ?string $modelLabel = 'Chamados';
     protected static ?string $pluralModelLabel = 'Chamados';
+    protected static ?string $slug = 'chamados';
+    protected static ?string $navigationGroup = 'Serviços';
 
 
 
@@ -30,33 +25,45 @@ class CallResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Hidden::make('user_id')->default(auth()->id())
-                ->label('Registrado por'),
-                Forms\Components\TextInput::make('issue')
-                    ->label('Problema')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('request')
-                    ->label('Solicitante')
-                    ->maxLength(255)
-                    ->default('Não informado'),
-                Forms\Components\DatePicker::make('scheduling')
-                    ->label('Agendamento')
-                    ->default(Date(now())),
-                Forms\Components\Select::make('location_id')
-                    ->label('Local')
-                    ->relationship('location', 'sector')
-                    ->searchable()
-                    ->preload()
-                    ->optionsLimit(20)
-                    ->required(),
-                Forms\Components\Select::make('tecs')
-                    ->label('Tecnicos')
-                    ->relationship('tecs', 'name')
-                    ->preload()
-                    ->multiple()
-                    ->maxItems(3)
-            ]);
+
+                Forms\Components\Section::make('Chamado')->description('Informações sobre o chamado')->schema([
+                    Forms\Components\Hidden::make('user_id')->default(auth()->id())
+                        ->label('Registrado por'),
+                    Forms\Components\TextInput::make('issue')
+                        ->label('Problema')
+                        ->required()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('request')
+                        ->label('Solicitante')
+                        ->maxLength(255)
+                        ->default('Não informado'),
+                    Forms\Components\DatePicker::make('scheduling')
+                        ->label('Agendamento')
+                        ->native(false)
+                        ->default(Date(now())),
+                ])->columns(3)->columnSpan(2),
+   
+
+                Forms\Components\Section::make('Local')->description('Informações do local')->schema([
+                    Forms\Components\Select::make('location_id')
+                        ->label('Local')
+                        ->relationship('location', 'sector')
+                        ->searchable()
+                        ->preload()
+                        ->optionsLimit(20)
+                        ->required(),
+                ])->columnSpan(1),
+
+                Forms\Components\Section::make('Tecnicos')->description('Tecnicos do chamado')->schema([
+                    Forms\Components\Select::make('tecs')
+                        ->label('Tecnicos')
+                        ->relationship('tecs', 'name')
+                        ->preload()
+                        ->multiple()
+                        ->maxItems(3)
+                ])->columnSpan(1),
+
+            ])->columns(2);
     }
 
     public static function table(Table $table): Table

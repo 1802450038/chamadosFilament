@@ -23,34 +23,40 @@ class AddressResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-map';
     protected static ?string $modelLabel = 'Endereço';
     protected static ?string $pluralModelLabel = 'Endereços';
+    protected static ?string $slug = 'enderecos';
+    protected static ?string $navigationGroup = 'Endereços';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
+
                 Forms\Components\Hidden::make('user_id')->default(auth()->id()),
-                Forms\Components\TextInput::make('building')
-                    ->label('Prédio')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('road')
-                    ->label('Rua')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('city')
-                    ->label('Cidade')
-                    ->default(env('CITY'))
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('state')
-                    ->label('Estado')
-                    ->default(env('STATE'))
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('number')
-                    ->label('Numero')
-                    ->required()
-                    ->maxLength(255),
+                Forms\Components\Section::make('Endereço')->description('Informações do endereço')->schema([
+                    Forms\Components\TextInput::make('building')
+                        ->label('Prédio')
+                        ->required()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('road')
+                        ->label('Rua')
+                        ->required()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('city')
+                        ->label('Cidade')
+                        ->default(env('CITY'))
+                        ->required()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('state')
+                        ->label('Estado')
+                        ->default(env('STATE'))
+                        ->required()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('number')
+                        ->label('Numero')
+                        ->required()
+                        ->maxLength(255),
+                ])->columns(2),
+
             ]);
     }
 
