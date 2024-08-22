@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('request')->nullable()->default('Não informado'); //Quem solicitou
             $table->date('scheduling')->nullable();
             $table->foreignIdFor(Location::class);
+            $table->boolean('active')->default(true);
             $table->timestamps();
         });
     }

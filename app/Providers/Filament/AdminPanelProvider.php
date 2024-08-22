@@ -30,10 +30,18 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->registration()
             ->profile(EditProfile::class,false)
-
             ->login()
+            ->brandName('Chamados - App')
+            ->brandLogo(asset('images/logo.png'))
+            ->brandLogoHeight('3rem')
+            ->font('Roboto')
             ->colors([
-                'primary' => Color::Indigo,
+                'danger' => Color::Rose,
+                'gray' => Color::Gray,
+                'info' => Color::Indigo,
+                'primary' => Color::Blue,
+                'success' => Color::Emerald,
+                'warning' => Color::Orange,
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')

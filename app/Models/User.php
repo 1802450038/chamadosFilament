@@ -8,6 +8,7 @@ use Illuminate\Notifications\Notifiable;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasName;
 use Filament\Panel;
+use Filament\Support\Colors\Color;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable implements FilamentUser , HasName
@@ -105,5 +106,26 @@ class User extends Authenticatable implements FilamentUser , HasName
 
     public function orders(){
         return $this->belongsToMany(ServiceOrder::class, 'user_os')->withTimestamps();
+    }
+
+    public function panelColor() {
+
+        return $this->color();
+
+        if($this->color() == 'BLUE'){
+            return Color::Blue;
+        } elseif($this->color() == 'INDIGO'){
+            return Color::Indigo;
+        } elseif($this->color() == 'BLUE'){
+            return Color::Blue;
+        } elseif($this->color() == 'INDIGO'){
+            return Color::Indigo;
+        } elseif($this->color() == 'GREEN'){
+            return Color::Green;
+        }elseif($this->color() == 'PINK'){
+            return Color::Pink;
+        }else {
+            return Color::Orange;
+        }
     }
 }

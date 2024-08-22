@@ -3,24 +3,21 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserResource\Pages;
-use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use League\Flysystem\Visibility;
+
 
 class UserResource extends Resource
 {
     protected static ?string $model = User::class;
-
     protected static ?string $navigationIcon = 'heroicon-o-users';
     protected static ?string $modelLabel = 'Usuario';
     protected static ?string $pluralModelLabel = 'Usuarios';
-
 
     public static function form(Form $form): Form
     {
@@ -48,7 +45,8 @@ class UserResource extends Resource
                             ->label('Senha')
                             ->required()
                             ->default(env('CITY') . '123'),
-                        Forms\Components\Toggle::make('admin')
+                            
+                        Forms\Components\Toggle::make('admin')->visible(auth()->user()->admin)
                             ->label('Admin')
                             ->required()
                             ->default(false),
@@ -119,6 +117,7 @@ class UserResource extends Resource
                     ->searchable(),
                 Tables\Columns\IconColumn::make('status')
                     ->label('Ativo')
+                    ->toggleable()
                     ->boolean(),
                 Tables\Columns\IconColumn::make('admin')
                     ->label('Administrador')
@@ -139,6 +138,7 @@ class UserResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
