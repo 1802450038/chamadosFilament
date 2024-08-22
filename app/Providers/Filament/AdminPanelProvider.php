@@ -7,6 +7,7 @@ use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Pages;
 use App\Filament\Pages\Auth\EditProfile;
+use Edwink\FilamentUserActivity\FilamentUserActivityPlugin;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -64,6 +65,7 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                \Edwink\FilamentUserActivity\Http\Middleware\RecordUserActivity::class,
             ])
             ->authMiddleware([
                 Authenticate::class,
@@ -79,6 +81,8 @@ class AdminPanelProvider extends PanelProvider
                            return auth()->user()->admin;
                         }
                     )
+            )->plugin(
+                FilamentUserActivityPlugin::make(),
             );
     }
 }

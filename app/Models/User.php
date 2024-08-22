@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use Edwink\FilamentUserActivity\Traits\UserActivityTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
 use Filament\Models\Contracts\FilamentUser;
@@ -17,6 +19,7 @@ class User extends Authenticatable implements FilamentUser , HasName
 
     protected $guarded = ['id'];
 
+    use UserActivityTrait;
     /**
      * The attributes that are mass assignable.
      *

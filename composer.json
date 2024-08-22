@@ -6,6 +6,8 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "alperenersoy/filament-export": "^3.x-dev",
+        "edwink/filament-user-activity": "^1.0",
         "filament/filament": "^3.2",
         "geo-sot/filament-env-editor": "^0.0.4",
         "laravel/framework": "^11.9",
