@@ -6,6 +6,8 @@ use App\Filament\Resources\CallResource\Pages;
 use App\Models\Call;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -42,7 +44,7 @@ class CallResource extends Resource
                         ->native(false)
                         ->default(Date(now())),
                 ])->columns(3)->columnSpan(2),
-   
+
 
                 Forms\Components\Section::make('Local')->description('Informações do local')->schema([
                     Forms\Components\Select::make('location_id')
@@ -110,6 +112,11 @@ class CallResource extends Resource
                         }
                     )
                     ->sortable(),
+                Tables\Columns\ToggleColumn::make('status')
+                    ->onIcon('heroicon-o-megaphone')
+                    ->onColor('success')
+                    ->offIcon('heroicon-o-x-mark')
+                    ->offColor('gray'),
                 Tables\Columns\TextColumn::make('location.sector')
                     ->label('Local')
                     ->color('gray')
@@ -139,6 +146,18 @@ class CallResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
+            ]);
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                TextEntry::make('issue')->label('Problema'),
+                TextEntry::make('request')->label('Solicitante'),
+                TextEntry::make('scheduling')->label('Agendamento'),
+                TextEntry::make('status')->label('Ativo'),
+                TextEntry::make('location.sector')->label('Local'),
             ]);
     }
 

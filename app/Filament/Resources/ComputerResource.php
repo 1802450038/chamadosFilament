@@ -11,9 +11,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\Relationship;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+
 
 class ComputerResource extends Resource
 {

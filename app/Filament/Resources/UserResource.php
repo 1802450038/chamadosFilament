@@ -9,8 +9,6 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use League\Flysystem\Visibility;
-
 
 class UserResource extends Resource
 {
@@ -29,7 +27,7 @@ class UserResource extends Resource
                         Forms\Components\TextInput::make('name')
                             ->label('Nome')
                             ->required()
-                            ->maxLength(255),
+                            ->maxLength(40),
 
                         Forms\Components\TextInput::make('email')
                             ->label('Email')
@@ -45,7 +43,7 @@ class UserResource extends Resource
                             ->label('Senha')
                             ->required()
                             ->default(env('CITY') . '123'),
-                            
+
                         Forms\Components\Toggle::make('admin')->visible(auth()->user()->admin)
                             ->label('Admin')
                             ->required()
