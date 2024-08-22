@@ -30,7 +30,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->registration()
-            ->profile(EditProfile::class,false)
+            ->profile(EditProfile::class, false)
             ->login()
             ->brandName('Chamados - App')
             ->brandLogo(asset('images/logo.png'))
@@ -67,6 +67,18 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ])->plugin( FilamentEnvEditorPlugin::make());
+            ])->plugin(
+                FilamentEnvEditorPlugin::make()
+                    ->navigationGroup('Ferramentas do sistema')
+                    ->navigationLabel('Configurações do sistema')
+                    ->navigationIcon('heroicon-o-cog-8-tooth')
+                    ->navigationSort(1)
+                    ->slug('editor-env')
+                    ->authorize(
+                        function ()  : bool{
+                           return auth()->user()->admin;
+                        }
+                    )
+            );
     }
 }
