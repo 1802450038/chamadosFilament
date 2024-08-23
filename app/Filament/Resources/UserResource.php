@@ -3,12 +3,19 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserResource\Pages;
+use App\Filament\Resources\UserResource\RelationManagers\CallRelationManager;
+use App\Filament\Resources\UserResource\RelationManagers\ServiceordersRelationManager;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\ImageEntry;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
 
 class UserResource extends Resource
 {
@@ -28,66 +35,49 @@ class UserResource extends Resource
                             ->label('Nome')
                             ->required()
                             ->maxLength(40),
-
                         Forms\Components\TextInput::make('email')
                             ->label('Email')
                             ->email()
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('occupation')
+                        Forms\Components\Select::make('occupation')
                             ->label('Cargo')
                             ->required()
-                            ->maxLength(255)
+                            ->options([
+                                'tecnico'=>'Tecnico',
+                                'atendente'=>'Atendente'
+                            ])
                             ->default('tecnico'),
                         Forms\Components\Hidden::make('password')
                             ->label('Senha')
                             ->required()
                             ->default(env('CITY') . '123'),
-
-                        Forms\Components\Toggle::make('admin')->visible(auth()->user()->admin)
+                        Forms\Components\Toggle::make('admin')
                             ->label('Admin')
-                            ->required()
                             ->default(false),
-                    ])->columnSpan(1),
-                    Forms\Components\Grid::make()->schema([
-
-                        Forms\Components\Section::make('Foto')->description('Foto de perfil do usuario')->schema([
-                            Forms\Components\FileUpload::make('picture')
-                                ->label('Foto'),
-                        ]),
-                        Forms\Components\Section::make('Personalização')->description('Preferencias do usuario')->schema([
-                            Forms\Components\Grid::make()->schema([
-                                Forms\Components\Radio::make('theme')
-                                    ->label('Tema')
-                                    ->boolean()
-                                    ->default(1)
-                                    ->options([
-                                        '1' => 'Claro',
-                                        '0' => 'Escuro',
-                                    ])
-                                    ->descriptions([
-                                        '1' => 'Tema claro.',
-                                        '0' => 'Tema escuro.',
-                                    ])->inline()
-                                    ->inlineLabel(false),
-                                Forms\Components\Select::make('color')
-                                    ->label('Cor do painel')
-                                    ->required()
-                                    ->options(
-                                        [
-                                            'BLUE' => 'AZUL',
-                                            'RED' => 'VERMELHO',
-                                            'GREEN' => 'VERDE',
-                                            'PINK' => 'ROSA',
-                                            'ORANGE' => 'LARANJA'
-                                        ]
-                                    ),
-                            ])->columns(2),
-
-
-                        ]),
-                    ])->columnSpan(1)
+                        Forms\Components\Toggle::make('status')
+                            ->label('Ativo')
+                            ->default(true),
+                    ])->columns(2),
                 ])->columns(2),
+            ]);
+    }
+
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Section::make('Usuario')->schema([
+                    TextEntry::make('name')->label('Nome')->icon('heroicon-o-user')->color('success')->size(TextEntry\TextEntrySize::Large),
+                    ImageEntry::make('avatar_url')->label('Foto')->size(80)->circular()
+                ])->columns(2),
+                Section::make('Dados')->schema([
+                    TextEntry::make('email')->label('Email'),
+                    TextEntry::make('occupation')->label('Cargo')->badge()->color('primary'),
+                    TextEntry::make('admin')->label('Admin'),
+                    TextEntry::make('status')->label('Ativo'),
+                ])->columns(2)
             ]);
     }
 
@@ -95,7 +85,7 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('picture')
+                Tables\Columns\ImageColumn::make('avatar_url')
                     ->label('Foto')
                     ->circular()
                     ->searchable(),
@@ -112,14 +102,19 @@ class UserResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('occupation')
                     ->label('Cargo')
-                    ->searchable(),
-                Tables\Columns\IconColumn::make('status')
+                    ->searchable(),                    
+                    Tables\Columns\ToggleColumn::make('status')
                     ->label('Ativo')
-                    ->toggleable()
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('admin')
-                    ->label('Administrador')
-                    ->boolean(),
+                    ->onIcon('heroicon-o-check')
+                    ->onColor('primary')
+                    ->offIcon('heroicon-o-x-mark')
+                    ->offColor('danger'),
+                    Tables\Columns\ToggleColumn::make('admin')
+                    ->label('Admin')
+                    ->onIcon('heroicon-o-check')
+                    ->onColor('primary')
+                    ->offIcon('heroicon-o-x-mark')
+                    ->offColor('danger'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Criado em')
                     ->dateTime()
@@ -148,7 +143,8 @@ class UserResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            CallRelationManager::class,
+            ServiceordersRelationManager::class
         ];
     }
 
@@ -157,7 +153,9 @@ class UserResource extends Resource
         return [
             'index' => Pages\ListUsers::route('/'),
             'create' => Pages\CreateUser::route('/create'),
-            'edit' => Pages\EditUser::route('/{record}/edit'),
+            'view' => Pages\ViewUser::route('{record}'),
+            'edit' => Pages\EditUserInfo::route('/{record}/edit'),
+
         ];
     }
 }

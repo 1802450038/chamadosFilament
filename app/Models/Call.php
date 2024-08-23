@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 use function Laravel\Prompts\select;
 
@@ -13,6 +15,7 @@ class Call extends Model
 
     protected $guarded = ['id'];
 
+    use LogsActivity;
 
     public function user()
     {
@@ -27,6 +30,12 @@ class Call extends Model
     public function tecs()
     {
       return $this->belongsToMany(User::class, 'user_call')->withTimestamps();
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+        ->logOnly(['user_id', 'status', 'issue', 'location_id']);
     }
 
 }

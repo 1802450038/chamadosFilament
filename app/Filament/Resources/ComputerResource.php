@@ -3,13 +3,17 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ComputerResource\Pages;
-use App\Filament\Resources\ComputerResource\RelationManagers;
 use App\Models\Computer;
 use Filament\Forms;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\Grid;
+use Filament\Infolists\Components\ImageEntry;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 
@@ -29,11 +33,11 @@ class ComputerResource extends Resource
         return $form
             ->schema([
 
-                Grid::make()->schema([
+                Forms\Components\Grid::make()->schema([
 
 
                     Forms\Components\Section::make('Computador')->description('Informações sobre o computador')->schema([
-                        Grid::make()->schema([
+                        Forms\Components\Grid::make()->schema([
                             Forms\Components\Hidden::make('user_id')->default(auth()->id())->label('Registrado por'),
                             Forms\Components\TextInput::make('patrimony')
                                 ->label('Patrimonio')
@@ -49,7 +53,7 @@ class ComputerResource extends Resource
                     ])->columnSpan(1),
 
                     Forms\Components\Section::make('Local')->description('Informações sobre o local do computador')->schema([
-                        Grid::make()->schema([
+                        Forms\Components\Grid::make()->schema([
                             Forms\Components\Select::make('location_id')
                                 ->label('Localização')
                                 ->relationship('location', 'sector')
@@ -60,7 +64,7 @@ class ComputerResource extends Resource
                         ])->columns(1),
                     ])->columnSpan(1),
                     Forms\Components\Section::make('Extra')->description('Informações adicionais sobre o computador')->schema([
-                        Grid::make()->schema([
+                        Forms\Components\Grid::make()->schema([
                             Forms\Components\FileUpload::make('image')
                                 ->label('Imagem')
                                 ->image(),
@@ -74,6 +78,26 @@ class ComputerResource extends Resource
                 ])->columns(2)
             ]);
     }
+
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Section::make('Computador')->schema([
+                    TextEntry::make('patrimony')->label('Patrimonio')->icon('heroicon-o-qr-code'),
+                    TextEntry::make('brand')->label('Marca'),
+                ])->columns(2)->description("Informações adicionais do computador"),
+                Section::make('Extra')->schema([
+                    Grid::make()->schema([
+                        TextEntry::make('user.name')->label('Registrado por ')->icon('heroicon-o-user'),
+                        TextEntry::make('description')->label('Descrição')->html(),
+                    ])->columnSpan(1)->columns(1),
+                    ImageEntry::make('image')->label('Imagem')->size(80)->circular(),
+                ])->columns(2)->description("Informações do computador"),
+            ]);
+    }
+
 
     public static function table(Table $table): Table
     {
@@ -116,7 +140,10 @@ class ComputerResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true)
             ])
             ->filters([
-                //
+                SelectFilter::make('Local')
+                ->relationship('location', 'sector')
+                ->searchable()
+                ->preload()
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -141,6 +168,7 @@ class ComputerResource extends Resource
         return [
             'index' => Pages\ListComputers::route('/'),
             'create' => Pages\CreateComputer::route('/create'),
+            'view' => Pages\ViewComputer::route('{record}'),
             'edit' => Pages\EditComputer::route('/{record}/edit'),
         ];
     }

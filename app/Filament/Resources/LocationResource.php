@@ -6,11 +6,18 @@ use App\Filament\Resources\LocationResource\Pages;
 use App\Filament\Resources\LocationResource\RelationManagers;
 use App\Models\Address;
 use App\Models\Location;
+use Dompdf\Css\Color;
 use Filament\Forms;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\ImageEntry;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -48,7 +55,7 @@ class LocationResource extends Resource
                             ->required()
                             ->label('Setor')
                             ->maxLength(255),
-                            Forms\Components\TextInput::make('phone')
+                        Forms\Components\TextInput::make('phone')
                             ->required()
                             ->tel()
                             ->label('Telefone')
@@ -59,7 +66,7 @@ class LocationResource extends Resource
                             ->label('Localização do setor')
                             ->default('Não informado')
                             ->maxLength(255)->columnSpan(2),
-                            
+
                     ])->columns(2)
 
 
@@ -68,6 +75,21 @@ class LocationResource extends Resource
             ]);
     }
 
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Section::make('Endereço')->schema([
+                    TextEntry::make('address.building')->label('Prédio')->icon('heroicon-o-building-office')->color('success')->badge(),
+                ])->columns(1),
+                Section::make('Local')->schema([
+                    TextEntry::make('sector')->label('Setor')->badge()->icon('heroicon-o-map-pin')->color('danger'),
+                    TextEntry::make('phone')->label('Telefone')->badge()->icon('heroicon-o-phone')->color('primary'),
+                    TextEntry::make('sector_location')->label('Localização do setor'),
+
+                ])->columns(2)
+            ]);
+    }
     public static function table(Table $table): Table
     {
         return $table
@@ -78,8 +100,6 @@ class LocationResource extends Resource
                     ->icon('heroicon-o-map')
                     ->url(
                         function (Location $record): string {
-                            // print($record->address_id);
-                            // route('address.edit');
                             return 'addresses/' . $record->address_id . '/edit';
                         }
                     )
@@ -132,7 +152,10 @@ class LocationResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('Prédio')
+                ->relationship('address', 'building')
+                ->searchable()
+                ->preload()
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -144,6 +167,8 @@ class LocationResource extends Resource
                 ]),
             ]);
     }
+
+
 
     public static function getRelations(): array
     {
@@ -157,6 +182,7 @@ class LocationResource extends Resource
         return [
             'index' => Pages\ListLocations::route('/'),
             'create' => Pages\CreateLocation::route('/create'),
+            'view' => Pages\ViewLocation::route('{record}'),
             'edit' => Pages\EditLocation::route('/{record}/edit'),
         ];
     }

@@ -6,8 +6,6 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Pages;
-use App\Filament\Pages\Auth\EditProfile;
-use Edwink\FilamentUserActivity\FilamentUserActivityPlugin;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -20,7 +18,11 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Rmsramos\Activitylog\ActivitylogPlugin;
+use Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin;
 
+use Filament\Navigation\MenuItem;
+use Joaopaulolndev\FilamentEditProfile\Pages\EditProfilePage;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -31,22 +33,20 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->registration()
-            ->profile(EditProfile::class, false)
+            ->profile()
             ->login()
-            ->brandName('Chamados - App')
             ->brandLogo(asset('images/logo.png'))
             ->brandLogoHeight('3rem')
             ->font('Roboto')
-            ->colors([
-                'danger' => Color::Rose,
-                'gray' => Color::Gray,
-                'info' => Color::Indigo,
-                'primary' => Color::Blue,
-                'success' => Color::Emerald,
-                'warning' => Color::Orange,
-            ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
+            ->userMenuItems([
+                'profile' => MenuItem::make()
+                    ->label(fn() => auth()->user()->name)
+                    ->url(fn(): string => EditProfilePage::getUrl())
+                    ->icon('heroicon-m-user-circle')
+                    ->visible(true)
+            ])
             ->pages([
                 Pages\Dashboard::class,
             ])
@@ -65,11 +65,27 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
-                \Edwink\FilamentUserActivity\Http\Middleware\RecordUserActivity::class,
+                \Hasnayeen\Themes\Http\Middleware\SetTheme::class
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ])->plugin(
+            ])
+            ->plugin(
+                FilamentEditProfilePlugin::make()
+                    ->slug('meu perfil')
+                    ->setTitle('Meu perfil')
+                    ->setNavigationLabel('meu-perfil')
+                    ->setIcon('heroicon-o-user')
+                    ->setSort(1)
+                    ->shouldShowDeleteAccountForm(false)
+                    ->shouldShowBrowserSessionsForm()
+                    ->shouldShowAvatarForm(
+                        value: true,
+                        directory: 'avatars', // image will be stored in 'storage/app/public/avatars
+                        rules: 'mimes:jpeg,png|max:1024' //only accept
+                    )
+            )
+            ->plugin(
                 FilamentEnvEditorPlugin::make()
                     ->navigationGroup('Ferramentas do sistema')
                     ->navigationLabel('Configurações do sistema')
@@ -77,12 +93,14 @@ class AdminPanelProvider extends PanelProvider
                     ->navigationSort(1)
                     ->slug('editor-env')
                     ->authorize(
-                        function ()  : bool{
-                           return auth()->user()->admin;
-                        }
+                        fn() => auth()->user()->admin === 1
                     )
             )->plugin(
-                FilamentUserActivityPlugin::make(),
+                ActivitylogPlugin::make()->authorize(
+                    fn() => auth()->user()->admin === 1
+                )->navigationGroup('Registro de atividades')->label('Registro')->pluralLabel('Registros')->navigationCountBadge(true),
+            )->plugin(
+                \Hasnayeen\Themes\ThemesPlugin::make()
             );
     }
 }

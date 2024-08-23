@@ -3,17 +3,17 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\AddressResource\Pages;
-use App\Filament\Resources\AddressResource\RelationManagers;
+use App\Filament\Resources\AddressResource\RelationManagers\LocationRelationManager;
 use App\Models\Address;
-use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Illuminate\Support\Env;
+
 
 class AddressResource extends Resource
 {
@@ -57,6 +57,20 @@ class AddressResource extends Resource
                         ->maxLength(255),
                 ])->columns(2),
 
+            ]);
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Section::make('Endereço')->schema([
+                    TextEntry::make('building')->label('Prédio'),
+                    TextEntry::make('road')->label('Rua'),
+                    TextEntry::make('city')->label('Cidade'),
+                    TextEntry::make('state')->label('Estado'),
+                    TextEntry::make('number')->label('Numero'),
+                ])->columns(2),
             ]);
     }
 
@@ -113,7 +127,7 @@ class AddressResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            LocationRelationManager::class
         ];
     }
 
@@ -122,6 +136,7 @@ class AddressResource extends Resource
         return [
             'index' => Pages\ListAddresses::route('/'),
             'create' => Pages\CreateAddress::route('/create'),
+            'view' => Pages\ViewAddress::route('{record}'),
             'edit' => Pages\EditAddress::route('/{record}/edit'),
         ];
     }

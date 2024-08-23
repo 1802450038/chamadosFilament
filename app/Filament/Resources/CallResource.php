@@ -6,11 +6,14 @@ use App\Filament\Resources\CallResource\Pages;
 use App\Models\Call;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\ImageEntry;
+use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class CallResource extends Resource
 {
@@ -59,7 +62,7 @@ class CallResource extends Resource
                 Forms\Components\Section::make('Tecnicos')->description('Tecnicos do chamado')->schema([
                     Forms\Components\Select::make('tecs')
                         ->label('Tecnicos')
-                        ->relationship('tecs', 'name')
+                        ->relationship('tecs', 'name',fn(Builder $query)=> $query->where('status','=','1'))
                         ->preload()
                         ->multiple()
                         ->maxItems(3)
@@ -83,6 +86,7 @@ class CallResource extends Resource
                 Tables\Columns\TextColumn::make('tecs.name')
                     ->label('Tecnicos')
                     ->badge()
+                    ->icon('heroicon-m-user')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('request')
                     ->label('Solicitante')
@@ -113,6 +117,7 @@ class CallResource extends Resource
                     )
                     ->sortable(),
                 Tables\Columns\ToggleColumn::make('status')
+                    ->label('Ativo')
                     ->onIcon('heroicon-o-megaphone')
                     ->onColor('success')
                     ->offIcon('heroicon-o-x-mark')
@@ -142,9 +147,11 @@ class CallResource extends Resource
                 Tables\Actions\ViewAction::make(),
 
             ])
+            ->headerActions([])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+
                 ]),
             ]);
     }
@@ -153,11 +160,17 @@ class CallResource extends Resource
     {
         return $infolist
             ->schema([
-                TextEntry::make('issue')->label('Problema'),
-                TextEntry::make('request')->label('Solicitante'),
-                TextEntry::make('scheduling')->label('Agendamento'),
-                TextEntry::make('status')->label('Ativo'),
-                TextEntry::make('location.sector')->label('Local'),
+                Section::make('Chamado')->schema([
+                    TextEntry::make('issue')->label('Problema'),
+                    TextEntry::make('request')->label('Solicitante'),
+                    TextEntry::make('scheduling')->label('Agendamento'),
+                    TextEntry::make('status')->label('Ativo'),
+                    TextEntry::make('location.sector')->label('Local'),
+                ])->columns(2),
+                Section::make('Tecnicos')->schema([
+                    ImageEntry::make('tecs.avatar_url')->label('Tecnicos')->circular()->height(40)->stacked(),
+                    TextEntry::make('tecs.name')->label('Nomes')->badge()->icon('heroicon-o-user')
+                ])->columns(2)
             ]);
     }
 
@@ -171,6 +184,7 @@ class CallResource extends Resource
         return [
             'index' => Pages\ListCalls::route('/'),
             'create' => Pages\CreateCall::route('/create'),
+            'view' => Pages\ViewCall::route('{record}'),
             'edit' => Pages\EditCall::route('/{record}/edit'),
         ];
     }

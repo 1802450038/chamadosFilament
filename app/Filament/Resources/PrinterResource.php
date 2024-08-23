@@ -7,8 +7,12 @@ use App\Filament\Resources\PrinterResource\RelationManagers;
 use App\Models\Printer;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -73,6 +77,25 @@ class PrinterResource extends Resource
             ]);
     }
 
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Section::make('Local')->schema([
+                    TextEntry::make('location.sector')->label('Local')->icon('heroicon-o-map-pin')->color('success')->badge(),
+                ])->columns(1),
+                Section::make('Impressora')->schema([
+                    TextEntry::make('user.name')->label('Registrado por'),
+                    TextEntry::make('brand')->label('Marca'),
+                    TextEntry::make('ip')->label('IP'),
+                    TextEntry::make('identifier')->label('Identificador'),
+                    TextEntry::make('colored')->label('Colorida'),
+
+                ])->columns(2)
+            ]);
+    }
+
     public static function table(Table $table): Table
     {
         return $table
@@ -113,7 +136,10 @@ class PrinterResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('Local')
+                ->relationship('location', 'sector')
+                ->searchable()
+                ->preload()
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -138,6 +164,7 @@ class PrinterResource extends Resource
         return [
             'index' => Pages\ListPrinters::route('/'),
             'create' => Pages\CreatePrinter::route('/create'),
+            'view' => Pages\ViewPrinter::route('{record}'),
             'edit' => Pages\EditPrinter::route('/{record}/edit'),
         ];
     }

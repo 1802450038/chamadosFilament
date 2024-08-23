@@ -2,24 +2,25 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-
-use Edwink\FilamentUserActivity\Traits\UserActivityTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
 use Filament\Models\Contracts\FilamentUser;
+use Filament\Models\Contracts\HasAvatar;
 use Filament\Models\Contracts\HasName;
 use Filament\Panel;
-use Filament\Support\Colors\Color;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
-class User extends Authenticatable implements FilamentUser , HasName
+
+class User extends Authenticatable implements FilamentUser, HasName, HasAvatar
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, LogsActivity;
 
     protected $guarded = ['id'];
 
-    use UserActivityTrait;
+    // use UserActivityTrait;
     /**
      * The attributes that are mass assignable.
      *
@@ -28,6 +29,10 @@ class User extends Authenticatable implements FilamentUser , HasName
     protected $fillable = [
         'name',
         'email',
+        'status',
+        'occupation',
+        'admin',
+        'avatar_url',
         'password',
     ];
 
@@ -52,14 +57,6 @@ class User extends Authenticatable implements FilamentUser , HasName
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
-    }
-
-    public static function getId(){
-        return User::get('id');
-    }
-
-    public function picture(){
-        return "TESTE PICTURE";
     }
 
     public function address()
@@ -103,32 +100,26 @@ class User extends Authenticatable implements FilamentUser , HasName
         return $this->id;
     }
 
-    public function calls(){
+    public function calls()
+    {
         return $this->belongsToMany(Call::class, 'user_call')->withTimestamps();
     }
 
-    public function orders(){
+    public function orders()
+    {
         return $this->belongsToMany(ServiceOrder::class, 'user_os')->withTimestamps();
     }
 
-    public function panelColor() {
-
-        return $this->color();
-
-        if($this->color() == 'BLUE'){
-            return Color::Blue;
-        } elseif($this->color() == 'INDIGO'){
-            return Color::Indigo;
-        } elseif($this->color() == 'BLUE'){
-            return Color::Blue;
-        } elseif($this->color() == 'INDIGO'){
-            return Color::Indigo;
-        } elseif($this->color() == 'GREEN'){
-            return Color::Green;
-        }elseif($this->color() == 'PINK'){
-            return Color::Pink;
-        }else {
-            return Color::Orange;
-        }
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['name', 'id', 'admin', 'email', 'occupation', 'admin', 'avatar_url']);
     }
+
+
+    public function getFilamentAvatarUrl(): ?string
+    {
+        return $this->avatar_url ? Storage::url("$this->avatar_url") : null;
+    }
+
 }

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use App\Filament\Resources\ServiceOrderResource\Pages;
 use App\Filament\Resources\ServiceOrderResource\RelationManagers;
 use App\Models\ServiceOrder;
@@ -102,6 +103,9 @@ class ServiceOrderResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+                    FilamentExportBulkAction::make('Imprimir')
+                    ->fileName("OS")
+                    ->defaultFormat('pdf') // xlsx, csv or pdf
                 ]),
             ]);
     }
