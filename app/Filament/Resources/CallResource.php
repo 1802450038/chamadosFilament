@@ -2,11 +2,15 @@
 
 namespace App\Filament\Resources;
 
+
 use App\Filament\Resources\CallResource\Pages;
+
+use App\Filament\Resources\CallResource\RelationManagers\LocationRelationManager;
+use App\Filament\Resources\CallResource\RelationManagers\TecsRelationManager;
 use App\Models\Call;
 use Filament\Forms;
 use Filament\Forms\Form;
-use Filament\Infolists\Components\ImageEntry;
+// use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
@@ -23,8 +27,6 @@ class CallResource extends Resource
     protected static ?string $pluralModelLabel = 'Chamados';
     protected static ?string $slug = 'chamados';
     protected static ?string $navigationGroup = 'Serviços';
-
-
 
     public static function form(Form $form): Form
     {
@@ -62,13 +64,19 @@ class CallResource extends Resource
                 Forms\Components\Section::make('Tecnicos')->description('Tecnicos do chamado')->schema([
                     Forms\Components\Select::make('tecs')
                         ->label('Tecnicos')
-                        ->relationship('tecs', 'name',fn(Builder $query)=> $query->where('status','=','1'))
+                        ->relationship('tecs', 'name', fn(Builder $query) => $query->where('status', '=', '1')->where('occupation', '=', 'tecnico'))
                         ->preload()
                         ->multiple()
                         ->maxItems(3)
                 ])->columnSpan(1),
 
             ])->columns(2);
+    }
+
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
     }
 
     public static function table(Table $table): Table
@@ -165,18 +173,16 @@ class CallResource extends Resource
                     TextEntry::make('request')->label('Solicitante'),
                     TextEntry::make('scheduling')->label('Agendamento'),
                     TextEntry::make('status')->label('Ativo'),
-                    TextEntry::make('location.sector')->label('Local'),
                 ])->columns(2),
-                Section::make('Tecnicos')->schema([
-                    ImageEntry::make('tecs.avatar_url')->label('Tecnicos')->circular()->height(40)->stacked(),
-                    TextEntry::make('tecs.name')->label('Nomes')->badge()->icon('heroicon-o-user')
-                ])->columns(2)
             ]);
     }
 
     public static function getRelations(): array
     {
-        return [];
+        return [
+            LocationRelationManager::class,
+            TecsRelationManager::class
+        ];
     }
 
     public static function getPages(): array

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Resources\AddressResource\RelationManagers\LocationRelationManager;
 use App\Filament\Resources\PrinterResource\Pages;
 use App\Filament\Resources\PrinterResource\RelationManagers;
 use App\Models\Printer;
@@ -77,6 +78,11 @@ class PrinterResource extends Resource
             ]);
     }
 
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
 
     public static function infolist(Infolist $infolist): Infolist
     {
@@ -155,7 +161,7 @@ class PrinterResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            LocationRelationManager::class
         ];
     }
 

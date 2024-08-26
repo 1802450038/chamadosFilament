@@ -2,8 +2,10 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Resources\AddressResource\RelationManagers\LocationRelationManager;
 use App\Filament\Resources\LocationResource\Pages;
 use App\Filament\Resources\LocationResource\RelationManagers;
+use App\Filament\Resources\LocationResource\RelationManagers\AddressRelationManager;
 use App\Models\Address;
 use App\Models\Location;
 use Dompdf\Css\Color;
@@ -75,18 +77,20 @@ class LocationResource extends Resource
             ]);
     }
 
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
+
     public static function infolist(Infolist $infolist): Infolist
     {
         return $infolist
             ->schema([
-                Section::make('Endereço')->schema([
-                    TextEntry::make('address.building')->label('Prédio')->icon('heroicon-o-building-office')->color('success')->badge(),
-                ])->columns(1),
                 Section::make('Local')->schema([
-                    TextEntry::make('sector')->label('Setor')->badge()->icon('heroicon-o-map-pin')->color('danger'),
-                    TextEntry::make('phone')->label('Telefone')->badge()->icon('heroicon-o-phone')->color('primary'),
+                    TextEntry::make('sector')->label('Setor')->icon('heroicon-o-map-pin')->color('primary'),
+                    TextEntry::make('phone')->label('Telefone')->badge()->icon('heroicon-o-phone')->color('success'),
                     TextEntry::make('sector_location')->label('Localização do setor'),
-
                 ])->columns(2)
             ]);
     }
@@ -100,7 +104,7 @@ class LocationResource extends Resource
                     ->icon('heroicon-o-map')
                     ->url(
                         function (Location $record): string {
-                            return 'addresses/' . $record->address_id . '/edit';
+                            return 'enderecos/' . $record->address_id;
                         }
                     )
                     ->searchable(),
@@ -173,7 +177,7 @@ class LocationResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            AddressRelationManager::class
         ];
     }
 

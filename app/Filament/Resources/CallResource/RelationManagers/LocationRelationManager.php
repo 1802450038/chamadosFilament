@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\AddressResource\RelationManagers;
+namespace App\Filament\Resources\CallResource\RelationManagers;
 
 use App\Models\Location;
 use Filament\Forms;
@@ -9,28 +9,20 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class LocationRelationManager extends RelationManager
 {
     protected static string $relationship = 'location';
-    protected static string $formTitle = 'location';
 
 
     public function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('sector')
-                    ->label('Setor')
+                Forms\Components\TextInput::make('address_id,sector,phone,sector_location')
                     ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('sector_location')
-                    ->label('Localização do setor')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('phone')
-                    ->required()
-                    ->label('Telefone')
                     ->maxLength(255),
             ]);
     }
@@ -44,6 +36,11 @@ class LocationRelationManager extends RelationManager
                     ->label('Prédio')
                     ->color('primary')
                     ->icon('heroicon-o-map')
+                    ->url(
+                        function (Location $record): string {
+                            return '../enderecos/' . $record->address_id ;
+                        }
+                    )
                     ->searchable(),
                 Tables\Columns\TextColumn::make('sector')
                     ->label('Setor')

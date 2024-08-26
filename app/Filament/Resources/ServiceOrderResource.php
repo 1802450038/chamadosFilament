@@ -5,9 +5,16 @@ namespace App\Filament\Resources;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use App\Filament\Resources\ServiceOrderResource\Pages;
 use App\Filament\Resources\ServiceOrderResource\RelationManagers;
+use App\Filament\Resources\ServiceOrderResource\RelationManagers\ComputerRelationManager;
+use App\Filament\Resources\ServiceOrderResource\RelationManagers\TecsRelationManager;
 use App\Models\ServiceOrder;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\Grid;
+use Filament\Infolists\Components\ImageEntry;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -40,15 +47,17 @@ class ServiceOrderResource extends Resource
                         ->searchable(),
                 ]),
                 Forms\Components\Section::make('Os')->description('Informações sobre a ordem de serviço')->schema([
-                    Forms\Components\Select::make('tecs')
-                    ->label('Tecnicos')
-                    ->relationship('tecs', 'name')
-                    ->preload()
-                    ->multiple()
-                    ->maxItems(3),
                 Forms\Components\TextInput::make('defect')
                     ->label('Defeito')
                     ->maxLength(255),
+                   
+                        Forms\Components\Select::make('tecs')
+                            ->label('Tecnicos')
+                            ->relationship('tecs', 'name', fn(Builder $query) => $query->where('status', '=', '1')->where('occupation', '=', 'tecnico'))
+                            ->preload()
+                            ->multiple()
+                            ->maxItems(3)
+                  ,
                 Forms\Components\RichEditor::make('repair_note')
                     ->label('Nota')
                     ->maxLength(255)
@@ -57,6 +66,23 @@ class ServiceOrderResource extends Resource
 
                
             ])->columns(2);
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Section::make('OS')->schema([
+                    TextEntry::make('defect')->label('Defeito'),
+                    TextEntry::make('repair_note')->html()->label('Nota')
+                ])->columns(2)->description("Informações sobre a ordedem de serviço"),
+            ]);
+    }
+
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
     }
 
     public static function table(Table $table): Table
@@ -113,7 +139,8 @@ class ServiceOrderResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            ComputerRelationManager::class,
+            TecsRelationManager::class,
         ];
     }
 
@@ -123,6 +150,7 @@ class ServiceOrderResource extends Resource
             'index' => Pages\ListServiceOrders::route('/'),
             'create' => Pages\CreateServiceOrder::route('/create'),
             'edit' => Pages\EditServiceOrder::route('/{record}/edit'),
+            'view' => Pages\ViewServiceOrder::route('/{record}')
         ];
     }
 }
