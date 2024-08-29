@@ -47,24 +47,23 @@ class ServiceOrderResource extends Resource
                         ->searchable(),
                 ]),
                 Forms\Components\Section::make('Os')->description('Informações sobre a ordem de serviço')->schema([
-                Forms\Components\TextInput::make('defect')
-                    ->label('Defeito')
-                    ->maxLength(255),
-                   
-                        Forms\Components\Select::make('tecs')
-                            ->label('Tecnicos')
-                            ->relationship('tecs', 'name', fn(Builder $query) => $query->where('status', '=', '1')->where('occupation', '=', 'tecnico'))
-                            ->preload()
-                            ->multiple()
-                            ->maxItems(3)
-                  ,
-                Forms\Components\RichEditor::make('repair_note')
-                    ->label('Nota')
-                    ->maxLength(255)
-                    ->default('Não informado')->columnSpan(2),
+                    Forms\Components\TextInput::make('defect')
+                        ->label('Defeito')
+                        ->maxLength(255),
+
+                    Forms\Components\Select::make('tecs')
+                        ->label('Tecnicos')
+                        ->relationship('tecs', 'name', fn(Builder $query) => $query->where('status', '=', '1')->where('occupation', '=', 'tecnico'))
+                        ->preload()
+                        ->multiple()
+                        ->maxItems(3),
+                    Forms\Components\RichEditor::make('repair_note')
+                        ->label('Nota')
+                        ->maxLength(255)
+                        ->default('Não informado')->columnSpan(2),
                 ])->columns(2),
 
-               
+
             ])->columns(2);
     }
 
@@ -95,6 +94,11 @@ class ServiceOrderResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('computer.patrimony')
+                    ->label('Computador')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('computer.location.sector')
+                    ->label('Local')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('tecs.name')
@@ -130,8 +134,8 @@ class ServiceOrderResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                     FilamentExportBulkAction::make('Imprimir')
-                    ->fileName("OS")
-                    ->defaultFormat('pdf') // xlsx, csv or pdf
+                        ->fileName("OS")
+                        ->defaultFormat('pdf') // xlsx, csv or pdf
                 ]),
             ]);
     }

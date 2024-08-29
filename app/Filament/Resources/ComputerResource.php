@@ -74,7 +74,7 @@ class ComputerResource extends Resource
                                 ->maxLength(255),
                         ])->columns(2),
                     ])->columnSpan(2),
-             
+
                 ])->columns(2)
             ]);
     }
@@ -147,9 +147,9 @@ class ComputerResource extends Resource
             ])
             ->filters([
                 SelectFilter::make('Local')
-                ->relationship('location', 'sector')
-                ->searchable()
-                ->preload()
+                    ->relationship('location', 'sector')
+                    ->searchable()
+                    ->preload()
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

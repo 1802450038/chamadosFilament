@@ -116,6 +116,7 @@ class LocationResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('sector_location')
                     ->label('Localização')
+                    ->html()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('number')
                     ->label('Numero')
@@ -157,9 +158,9 @@ class LocationResource extends Resource
             ])
             ->filters([
                 SelectFilter::make('Prédio')
-                ->relationship('address', 'building')
-                ->searchable()
-                ->preload()
+                    ->relationship('address', 'building')
+                    ->searchable()
+                    ->preload()
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
