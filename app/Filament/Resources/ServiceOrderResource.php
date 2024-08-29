@@ -95,12 +95,11 @@ class ServiceOrderResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('computer.patrimony')
                     ->label('Computador')
-                    ->numeric()
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('computer.location.sector')
-                    ->label('Local')
-                    ->numeric()
-                    ->sortable(),
+                    ->searchable()
+                    ->label('Local'),
                 Tables\Columns\TextColumn::make('tecs.name')
                     ->label('Tecnicos')
                     ->badge()
@@ -129,12 +128,20 @@ class ServiceOrderResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\ViewAction::make(),
+
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                     FilamentExportBulkAction::make('Imprimir')
                         ->fileName("OS")
+                        ->icon("heroicon-o-printer")
+                        ->color("warning")
+                        ->disableFilterColumns()
+                        ->disableFileName()
+                        ->disableXlsx()
+                        ->disableCsv()
+                        ->disablePreview()
                         ->defaultFormat('pdf') // xlsx, csv or pdf
                 ]),
             ]);
