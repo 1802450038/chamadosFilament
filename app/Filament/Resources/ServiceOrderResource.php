@@ -95,6 +95,7 @@ class ServiceOrderResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('computer.patrimony')
+                ->label('Computador')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('tecs.name')
@@ -125,6 +126,7 @@ class ServiceOrderResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\ViewAction::make(),
+         
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
