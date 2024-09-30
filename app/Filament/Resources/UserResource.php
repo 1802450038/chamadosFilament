@@ -8,6 +8,7 @@ use App\Filament\Resources\UserResource\RelationManagers\ServiceordersRelationMa
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
@@ -15,6 +16,7 @@ use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
 
 class UserResource extends Resource
@@ -80,8 +82,36 @@ class UserResource extends Resource
                 Section::make('Dados')->schema([
                     TextEntry::make('email')->label('Email'),
                     TextEntry::make('occupation')->label('Cargo')->badge()->color('primary'),
-                    TextEntry::make('admin')->label('Admin'),
-                    TextEntry::make('status')->label('Ativo'),
+                    IconEntry::make('status')->label('status')
+                    ->color(function(Model $record){
+                        if($record->status == '1'){
+                            return "success";
+                        }else {
+                            return "danger";
+                        }
+                    })
+                    ->icon(function(Model $record){
+                        if($record->status == '1'){
+                            return "heroicon-o-check";
+                        }else {
+                            return "heroicon-o-x-mark";
+                        }
+                    }),
+                    IconEntry::make('admin')->label('admin')
+                    ->color(function(Model $record){
+                        if($record->admin == '1'){
+                            return "success";
+                        }else {
+                            return "danger";
+                        }
+                    })
+                    ->icon(function(Model $record){
+                        if($record->admin == '1'){
+                            return "heroicon-o-check";
+                        }else {
+                            return "heroicon-o-x-mark";
+                        }
+                    }),
                 ])->columns(2)
             ]);
     }

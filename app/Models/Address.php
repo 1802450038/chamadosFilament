@@ -18,4 +18,24 @@ class Address extends Model
     public function location(){
         return $this->hasMany(Location::class);
     }
+
+
+
+    public static function getLatLngAttributes(): array
+    {
+        return [
+            'lat' => 'lat',
+            'lng' => 'lng',
+        ];
+    }
+
+    public function getCoords(): array
+    {
+        return [
+            "lat" => (float)$this->lat,
+            "lng" => (float)$this->lng,
+        ];
+    }
+
+
 }

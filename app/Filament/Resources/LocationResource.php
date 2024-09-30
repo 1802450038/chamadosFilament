@@ -8,6 +8,7 @@ use App\Filament\Resources\LocationResource\RelationManagers;
 use App\Filament\Resources\LocationResource\RelationManagers\AddressRelationManager;
 use App\Models\Address;
 use App\Models\Location;
+use Cheesegrits\FilamentGoogleMaps\Infolists\MapEntry;
 use Dompdf\Css\Color;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
@@ -22,6 +23,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class LocationResource extends Resource
@@ -49,7 +51,34 @@ class LocationResource extends Resource
                             ->searchable()
                             ->preload()
                             ->optionsLimit(20)
-                            ->required(),
+                            ->required()
+                            ->createOptionForm([
+                                Forms\Components\Hidden::make('user_id')->default(auth()->id()),
+                                Forms\Components\Section::make('Endereço')->description('Informações do endereço')->schema([
+                                    Forms\Components\TextInput::make('building')
+                                        ->label('Prédio')
+                                        ->required()
+                                        ->maxLength(255),
+                                    Forms\Components\TextInput::make('road')
+                                        ->label('Rua')
+                                        ->required()
+                                        ->maxLength(255),
+                                    Forms\Components\TextInput::make('city')
+                                        ->label('Cidade')
+                                        ->default(env('CITY'))
+                                        ->required()
+                                        ->maxLength(255),
+                                    Forms\Components\TextInput::make('state')
+                                        ->label('Estado')
+                                        ->default(env('STATE'))
+                                        ->required()
+                                        ->maxLength(255),
+                                    Forms\Components\TextInput::make('number')
+                                        ->label('Numero')
+                                        ->required()
+                                        ->maxLength(255)
+                                ])
+                            ]),
                     ]),
                 Forms\Components\Section::make('Localidade')->description('Informações da localidade')
                     ->schema([
@@ -58,15 +87,16 @@ class LocationResource extends Resource
                             ->label('Setor')
                             ->maxLength(255),
                         Forms\Components\TextInput::make('phone')
-                            ->required()
+                            // ->required()
                             ->tel()
                             ->label('Telefone')
-                            ->default('Não informado')
+                            ->default('')
                             ->maxLength(255),
                         Forms\Components\RichEditor::make('sector_location')
                             ->required()
                             ->label('Localização do setor')
-                            ->default('Não informado')
+                            ->label('Descrição do local do setor')
+                            ->placeholder('Informe a posição, andar, localidade do setor...')
                             ->maxLength(255)->columnSpan(2),
 
                     ])->columns(2)
@@ -90,7 +120,22 @@ class LocationResource extends Resource
                 Section::make('Local')->schema([
                     TextEntry::make('sector')->label('Setor')->icon('heroicon-o-map-pin')->color('primary'),
                     TextEntry::make('phone')->label('Telefone')->badge()->icon('heroicon-o-phone')->color('success'),
-                    TextEntry::make('sector_location')->label('Localização do setor'),
+                    TextEntry::make('sector_location')->label('Localização do setor')->html(),
+                    TextEntry::make('address.building')->label('predio'),
+                    TextEntry::make('address.address')->label('Endereço'),
+                    MapEntry::make('map')
+                        ->label("Mapa")
+                        ->defaultZoom(15)
+                        ->defaultLocation(
+                            function (Model $record) {
+                                $coords = [
+                                    $record->address->lat,
+                                    $record->address->lng
+                                ];
+                                return $coords;
+                            }
+                        )
+                        ->columnSpanFull(),
                 ])->columns(2)
             ]);
     }
@@ -112,26 +157,13 @@ class LocationResource extends Resource
                     ->label('Setor')
                     ->color('gray')
                     ->icon('heroicon-o-map-pin')
-
                     ->searchable(),
                 Tables\Columns\TextColumn::make('sector_location')
                     ->label('Localização')
                     ->html()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('number')
-                    ->label('Numero')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Registrado por')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('city')
-                    ->label('Cidade')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('state')
-                    ->label('Estado')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('phone')
@@ -143,8 +175,8 @@ class LocationResource extends Resource
                             return 'tel:' . $state;
                         }
                     )
-                    ->icon('heroicon-o-phone')
-                    ->searchable(),
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->icon('heroicon-o-phone'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Criado-em')
                     ->dateTime('d/m/Y H:i')
@@ -178,7 +210,7 @@ class LocationResource extends Resource
     public static function getRelations(): array
     {
         return [
-            AddressRelationManager::class
+            // AddressRelationManager::class
         ];
     }
 

@@ -14,6 +14,8 @@ class ServiceordersRelationManager extends RelationManager
 {
     protected static string $relationship = 'serviceorders';
 
+    protected static ?string $title = 'Ordens de serviço';
+
     public function form(Form $form): Form
     {
         return $form

@@ -5,6 +5,8 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\AddressResource\Pages;
 use App\Filament\Resources\AddressResource\RelationManagers\LocationRelationManager;
 use App\Models\Address;
+use Cheesegrits\FilamentGoogleMaps\Fields\Geocomplete;
+use Cheesegrits\FilamentGoogleMaps\Infolists\MapEntry;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Infolists\Components\Section;
@@ -13,7 +15,7 @@ use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-
+use Illuminate\Database\Eloquent\Model;
 
 class AddressResource extends Resource
 {
@@ -37,24 +39,21 @@ class AddressResource extends Resource
                         ->label('Prédio')
                         ->required()
                         ->maxLength(255),
-                    Forms\Components\TextInput::make('road')
-                        ->label('Rua')
-                        ->required()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('city')
-                        ->label('Cidade')
-                        ->default(env('CITY'))
-                        ->required()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('state')
-                        ->label('Estado')
-                        ->default(env('STATE'))
-                        ->required()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('number')
-                        ->label('Numero')
-                        ->required()
-                        ->maxLength(255),
+                    Geocomplete::make('address')
+                        ->label('Endereço')
+                        ->geocodeOnLoad()
+                        ->countries(['br']) // restrict autocomplete results to these countries
+                        ->maxLength(1024)
+                        ->prefix('Selecione:')
+                        ->placeholder('Informe seu endereço ou selecione o icone ...')
+                        ->geolocate() // add a suffix button which requests and reverse geocodes the device location
+                        ->geolocateIcon('heroicon-o-map')
+                        ->reactive()
+                        ->updateLatLng(),
+                    Forms\Components\Hidden::make('lat')
+                        ->label('Longitude'),
+                    Forms\Components\Hidden::make('lng')
+                        ->label('Latitude')
                 ])->columns(2),
 
             ]);
@@ -69,13 +68,18 @@ class AddressResource extends Resource
     {
         return $infolist
             ->schema([
-                Section::make('Endereço')->schema([
-                    TextEntry::make('building')->label('Prédio'),
-                    TextEntry::make('road')->label('Rua'),
-                    TextEntry::make('city')->label('Cidade'),
-                    TextEntry::make('state')->label('Estado'),
-                    TextEntry::make('number')->label('Numero'),
-                ])->columns(2),
+                Section::make("Endereço")->schema([
+                    TextEntry::make("building")->label("Prédio")->columnSpanFull(),
+                    TextEntry::make("address")->label("Endereço")->columnSpanFull(),
+                    MapEntry::make('map')
+                        ->label("Mapa")
+                        ->defaultZoom(15)
+                        ->defaultLocation(
+                            function (Model $record) {
+                                return $record->getCoords();
+                            }
+                        )->columnSpanFull(),
+                ])->columns(2)->description("Detalhes sobre a localização"),
             ]);
     }
 
@@ -92,17 +96,8 @@ class AddressResource extends Resource
                     ->icon('heroicon-o-building-office')
                     ->color('success')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('road')
-                    ->label('Rua')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('city')
-                    ->label('Cidade')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('state')
-                    ->label('Estado')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('number')
-                    ->label('Numero')
+                Tables\Columns\TextColumn::make('address')
+                    ->label('Endereço')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Criado em')

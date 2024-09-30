@@ -11,8 +11,10 @@ use Filament\Tables\Table;
 class TecsRelationManager extends RelationManager
 {
     protected static string $relationship = 'tecs';
-
-    
+    protected static ?string $title = 'Tecnico';
+    protected static ?string $pluralTitle = 'Tecnicos';
+    protected static ?string $label = 'tecnico';
+    protected static ?string $pluralLabel = 'Tecnicos';
 
     public function form(Form $form): Form
     {
@@ -27,6 +29,7 @@ class TecsRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
+        
             ->recordTitleAttribute('id')
             ->columns([
                 Tables\Columns\ImageColumn::make('avatar_url')

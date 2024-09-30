@@ -8,8 +8,10 @@ use App\Filament\Resources\CallResource\Pages;
 use App\Filament\Resources\CallResource\RelationManagers\LocationRelationManager;
 use App\Filament\Resources\CallResource\RelationManagers\TecsRelationManager;
 use App\Models\Call;
+use Cheesegrits\FilamentGoogleMaps\Infolists\MapEntry;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\IconEntry;
 // use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
@@ -18,6 +20,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 class CallResource extends Resource
 {
@@ -134,7 +137,6 @@ class CallResource extends Resource
                     ->label('Local')
                     ->color('gray')
                     ->icon('heroicon-o-map-pin')
-                    ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Criado em')
@@ -172,15 +174,51 @@ class CallResource extends Resource
                     TextEntry::make('issue')->label('Problema'),
                     TextEntry::make('request')->label('Solicitante'),
                     TextEntry::make('scheduling')->label('Agendamento'),
-                    TextEntry::make('status')->label('Ativo'),
+                    IconEntry::make('status')->label('Ativo')
+                    ->color(function(Model $record){
+                        if($record->status == '1'){
+                            return "success";
+                        }else {
+                            return "danger";
+                        }
+                    })
+                    ->icon(function(Model $record){
+                        if($record->status == '1'){
+                            return "heroicon-o-check";
+                        }else {
+                            return "heroicon-o-x-mark";
+                        }
+                    }
+                    ) 
+                    
                 ])->columns(2),
+                Section::make('Local')->schema([
+
+                    TextEntry::make('location.address.building')->label('Prédio'),
+                    TextEntry::make('location.sector')->label('Setor'),
+                    TextEntry::make('location.address.address')->label('Endereço')->columnSpanFull(),
+                    MapEntry::make('map')
+                    ->label("Mapa")
+                    ->defaultZoom(15)
+                    ->defaultLocation(
+                        function (Model $record) {
+                            $coords = [
+                                $record->location->address->lat,
+                                $record->location->address->lng
+                            ];
+                            return $coords;
+                        }
+                    )
+                    ->columnSpanFull(),
+
+                ])->columns(2)
             ]);
     }
 
     public static function getRelations(): array
     {
         return [
-            LocationRelationManager::class,
+            // LocationRelationManager::class,
             TecsRelationManager::class
         ];
     }

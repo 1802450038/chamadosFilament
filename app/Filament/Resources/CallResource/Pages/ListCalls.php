@@ -35,4 +35,11 @@ class ListCalls extends ListRecords
                 ->badgeColor('success')
         ];
     }
+
+    public function setPage($page, $pageName = 'page'): void
+    {
+        parent::setPage($page, $pageName);
+ 
+        $this->dispatch('scroll-to-top');
+    }
 }

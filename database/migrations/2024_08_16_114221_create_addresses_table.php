@@ -16,10 +16,9 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(User::class); // Quem registrou
             $table->string('building');
-            $table->string('road');
-            $table->string('city');
-            $table->string('state');
-            $table->string('number');
+            $table->string('address');
+            $table->string('lat');
+            $table->string('lng');
             $table->timestamps();
         });
     }

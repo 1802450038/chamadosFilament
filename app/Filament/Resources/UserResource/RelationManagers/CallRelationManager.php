@@ -14,6 +14,8 @@ class CallRelationManager extends RelationManager
 {
     protected static string $relationship = 'calls';
 
+    protected static ?string $title = 'Chamados';
+
     public function form(Form $form): Form
     {
         return $form

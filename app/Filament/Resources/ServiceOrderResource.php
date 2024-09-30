@@ -93,6 +93,8 @@ class ServiceOrderResource extends Resource
                     ->numeric()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\ToggleColumn::make('active')
+                    ->label('Concluido'),
                 Tables\Columns\TextColumn::make('computer.patrimony')
                     ->label('Computador')
                     ->searchable()
@@ -137,7 +139,6 @@ class ServiceOrderResource extends Resource
                         ->fileName("OS")
                         ->icon("heroicon-o-printer")
                         ->color("warning")
-                        ->disableFilterColumns()
                         ->disableFileName()
                         ->disableXlsx()
                         ->disableCsv()

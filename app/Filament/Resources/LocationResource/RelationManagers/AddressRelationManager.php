@@ -34,17 +34,8 @@ class AddressRelationManager extends RelationManager
                     ->icon('heroicon-o-building-office')
                     ->color('success')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('road')
-                    ->label('Rua')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('city')
-                    ->label('Cidade')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('state')
-                    ->label('Estado')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('number')
-                    ->label('Numero')
+                Tables\Columns\TextColumn::make('address')
+                    ->label('Endereço')
                     ->searchable(),
             ])->searchable(false)
             ->filters([
