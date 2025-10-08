@@ -94,7 +94,11 @@ class ServiceOrderResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\ToggleColumn::make('active')
-                    ->label('Concluido'),
+                    ->label('Ativo')
+                    ->onIcon('heroicon-o-megaphone')
+                    ->onColor('success')
+                    ->offIcon('heroicon-o-x-circle')
+                    ->offColor('danger'),
                 Tables\Columns\TextColumn::make('computer.patrimony')
                     ->label('Computador')
                     ->searchable()
@@ -147,6 +151,9 @@ class ServiceOrderResource extends Resource
                 ]),
             ]);
     }
+
+
+
 
     public static function getRelations(): array
     {

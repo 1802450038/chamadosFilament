@@ -127,7 +127,7 @@ class CallResource extends Resource
                         }
                     )
                     ->sortable(),
-                Tables\Columns\ToggleColumn::make('status')
+                Tables\Columns\ToggleColumn::make('Ativo')
                     ->label('Ativo')
                     ->onIcon('heroicon-o-megaphone')
                     ->onColor('success')

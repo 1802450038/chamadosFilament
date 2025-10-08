@@ -4,24 +4,24 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ea0443713b6da513f512b0abe57487b5",
+    "content-hash": "d52531ebb4f519e5fab674bc16d8e0df",
     "packages": [
         {
             "name": "alperenersoy/filament-export",
-            "version": "v3.x-dev",
+            "version": "v3.0.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/alperenersoy/filament-export.git",
-                "reference": "cb2349030cf847a2b60ba852b287713cefc58542"
+                "reference": "550cce9debfefa4a497730eadae53074c602e49f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/alperenersoy/filament-export/zipball/cb2349030cf847a2b60ba852b287713cefc58542",
-                "reference": "cb2349030cf847a2b60ba852b287713cefc58542",
+                "url": "https://api.github.com/repos/alperenersoy/filament-export/zipball/550cce9debfefa4a497730eadae53074c602e49f",
+                "reference": "550cce9debfefa4a497730eadae53074c602e49f",
                 "shasum": ""
             },
             "require": {
-                "barryvdh/laravel-dompdf": "^2.0",
+                "barryvdh/laravel-dompdf": "^2.0|>=v3.1.1",
                 "filament/tables": "^3.0",
                 "php": "^8.0",
                 "spatie/simple-excel": ">=3.2.0"
@@ -58,9 +58,9 @@
             "description": "Customizable export and print functionality for Filament Admin Panel",
             "support": {
                 "issues": "https://github.com/alperenersoy/filament-export/issues",
-                "source": "https://github.com/alperenersoy/filament-export/tree/v3"
+                "source": "https://github.com/alperenersoy/filament-export/tree/v3.0.13"
             },
-            "time": "2023-10-18T18:40:17+00:00"
+            "time": "2025-06-30T18:41:11+00:00"
         },
         {
             "name": "anourvalar/eloquent-serialize",
@@ -11553,9 +11553,7 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "alperenersoy/filament-export": 20
-    },
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

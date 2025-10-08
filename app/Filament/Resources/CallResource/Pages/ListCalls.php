@@ -28,11 +28,11 @@ class ListCalls extends ListRecords
             'Abertos' => Tab::make()
                 ->modifyQueryUsing(fn(Builder $query) => $query->where('status', '=', '1'))
                 ->badge(Call::query()->where('status', '=', '1')->count())
-                ->badgeColor('primary'),
+                ->badgeColor('primary')->icon('heroicon-o-bell-alert'),
             'Concluidos' => Tab::make()
                 ->modifyQueryUsing(fn(Builder $query) => $query->where('status', '=', '0'))
                 ->badge(Call::query()->where('status', '=', '0')->count())
-                ->badgeColor('success')
+                ->badgeColor('success')->icon('heroicon-o-check-circle')
         ];
     }
 

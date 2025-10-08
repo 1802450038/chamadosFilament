@@ -26,6 +26,8 @@ class UserResource extends Resource
     protected static ?string $modelLabel = 'Usuario';
     protected static ?string $pluralModelLabel = 'Usuarios';
 
+    
+
     public static function form(Form $form): Form
     {
 
@@ -97,6 +99,7 @@ class UserResource extends Resource
                             return "heroicon-o-x-mark";
                         }
                     }),
+
                     IconEntry::make('admin')->label('admin')
                     ->color(function(Model $record){
                         if($record->admin == '1'){
@@ -113,7 +116,10 @@ class UserResource extends Resource
                         }
                     }),
                 ])->columns(2)
+
+
             ]);
+
     }
 
     public static function table(Table $table): Table
@@ -143,13 +149,13 @@ class UserResource extends Resource
                     ->onIcon('heroicon-o-check')
                     ->onColor('primary')
                     ->offIcon('heroicon-o-x-mark')
-                    ->offColor('danger'),
+                    ->offColor('danger')->visible(auth()->user()->admin),
                     Tables\Columns\ToggleColumn::make('admin')
                     ->label('Admin')
                     ->onIcon('heroicon-o-check')
                     ->onColor('primary')
                     ->offIcon('heroicon-o-x-mark')
-                    ->offColor('danger'),
+                    ->offColor('danger')->visible(auth()->user()->admin),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Criado em')
                     ->dateTime()
@@ -181,6 +187,21 @@ class UserResource extends Resource
             CallRelationManager::class,
             ServiceordersRelationManager::class
         ];
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()->admin;
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return auth()->user()->admin;
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        return auth()->user()->admin;
     }
 
     public static function getPages(): array
