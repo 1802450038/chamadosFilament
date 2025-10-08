@@ -1,7 +1,8 @@
 <?php
 
-
+use App\Livewire\CustomProfileComponent;
 use App\Livewire\ListActiveCalls;
+use App\Livewire\ListCalls;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -11,5 +12,5 @@ Route::get('/', function () {
 
 
 
-Route::get('painel',ListActiveCalls::class);
+Route::get('painel',CustomProfileComponent::class);
 
