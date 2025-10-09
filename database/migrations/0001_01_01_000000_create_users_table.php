@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('occupation')->default('tecnico');
-            $table->string('password')->default(Hash::make('password123$'));
+            $table->string('password');
             $table->boolean('status')->nullable()->default(true);
             $table->boolean('admin')->nullable()->default(false);
             $table->rememberToken();
