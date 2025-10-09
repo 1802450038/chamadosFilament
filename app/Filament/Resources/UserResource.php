@@ -52,7 +52,7 @@ class UserResource extends Resource
                                 'atendente'=>'Atendente'
                             ])
                             ->default('tecnico'),
-                        Forms\Components\TextInput::make('password')
+                        Forms\Components\Hidden::make('password')
                             ->label('Senha')
                             ->required()
                             ->default(env('CITY') . '123'),
