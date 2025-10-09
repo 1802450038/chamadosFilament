@@ -2,6 +2,9 @@
 
 namespace App\Providers\Filament;
 
+
+use Filament\Facades\Filament;
+use Filament\Forms\Components\Grid;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -9,7 +12,14 @@ use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
-use Filament\Widgets;
+use App\Filament\Widgets;
+use App\Filament\Widgets\LatestServiceOrdersTable;
+use App\Filament\Widgets\OpenCallsTable;
+use App\Filament\Widgets\OpenServiceOrdersStat;
+use App\Filament\Widgets\StatsOverview;
+use App\Filament\Widgets\TopLocationsChart;
+use App\Filament\Widgets\TopTechniciansByCallsChart;
+use App\Filament\Widgets\TopTechniciansByServiceOrdersChart;
 use GeoSot\FilamentEnvEditor\FilamentEnvEditorPlugin;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -22,6 +32,8 @@ use Rmsramos\Activitylog\ActivitylogPlugin;
 use Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin;
 
 use Filament\Navigation\MenuItem;
+use Filament\Resources\Resource;
+use Filament\View\LegacyComponents\Widget;
 use Joaopaulolndev\FilamentEditProfile\Pages\EditProfilePage;
 
 class AdminPanelProvider extends PanelProvider
@@ -50,10 +62,16 @@ class AdminPanelProvider extends PanelProvider
             ->pages([
                 Pages\Dashboard::class,
             ])
-            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
+            // ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
+                
+                OpenServiceOrdersStat::class,
+                OpenCallsTable::class,
+                LatestServiceOrdersTable::class,
+                TopLocationsChart::class,
+                TopTechniciansByCallsChart::class,
+                TopTechniciansByServiceOrdersChart::class,
+
             ])
             ->middleware([
                 EncryptCookies::class,
