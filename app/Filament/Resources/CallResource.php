@@ -127,12 +127,12 @@ class CallResource extends Resource
                         }
                     )
                     ->sortable(),
-                Tables\Columns\ToggleColumn::make('Ativo')
-                    ->label('Ativo')
-                    ->onIcon('heroicon-o-megaphone')
-                    ->onColor('success')
+                Tables\Columns\ToggleColumn::make('status')
+                    ->label('Aberto')
                     ->offIcon('heroicon-o-x-mark')
-                    ->offColor('gray'),
+                    ->offColor('danger')
+                    ->onIcon('heroicon-o-megaphone')
+                    ->onColor('warning'),
                 Tables\Columns\TextColumn::make('location.sector')
                     ->label('Local')
                     ->color('gray')
