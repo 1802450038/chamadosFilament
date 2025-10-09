@@ -13,4 +13,19 @@ class CreateServiceOrder extends CreateRecord
         return $this->previousUrl ?? $this->getResource()::getUrl('index');
     }
     protected static string $resource = ServiceOrderResource::class;
+
+    public function mount(): void
+    {
+        parent::mount();
+
+        // Verifica se o parâmetro computer_id está presente na URL
+        $computerId = request()->query('computer_id');
+        if ($computerId) {
+            // Define o valor padrão do campo computer_id no formulário
+            $this->form->fill([
+                'computer_id' => $computerId,
+                'user_id' => auth()->id(), 
+            ]);
+        }
+    }
 }

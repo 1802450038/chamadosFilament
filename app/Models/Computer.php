@@ -18,4 +18,8 @@ class Computer extends Model
     public function location(){
         return $this->belongsTo(Location::class);
     }
+
+    public function serviceOrders() {
+        return $this->hasMany(ServiceOrder::class);
+    }
 }

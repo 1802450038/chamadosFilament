@@ -44,26 +44,62 @@ class ServiceOrderResource extends Resource
                         ->required()
                         ->preload()
                         ->optionsLimit(20)
-                        ->searchable(),
-                ]),
-                Forms\Components\Section::make('Os')->description('Informações sobre a ordem de serviço')->schema([
-                    Forms\Components\TextInput::make('defect')
-                        ->label('Defeito')
-                        ->maxLength(255),
+                        ->searchable()
+                        ->placeholder('Selecione o computador ou aperte em + para cadastrar um novo')
+                        ->createOptionForm([
 
-                    Forms\Components\Select::make('tecs')
-                        ->label('Tecnicos')
-                        ->relationship('tecs', 'name', fn(Builder $query) => $query->where('status', '=', '1')->where('occupation', '=', 'tecnico'))
-                        ->preload()
-                        ->multiple()
-                        ->maxItems(3),
-                    Forms\Components\RichEditor::make('repair_note')
-                        ->label('Nota')
-                        ->maxLength(255)
-                        ->default('Não informado')->columnSpan(2),
-                ])->columns(2),
+                            Forms\Components\Hidden::make('user_id')->default(auth()->id()),
+
+                            Forms\Components\Section::make('Computador')->description('Informações sobre o computador')->schema([
+
+                                Forms\Components\TextInput::make('patrimony')
+                                    ->label('Patrimonio')
+                                    ->placeholder('Codigo do patrimonio ou alguma identificação')
+                                    ->required()
+                                    ->maxLength(255),
+
+                                Forms\Components\TextInput::make('brand')
+                                    ->label('Marca')
+                                    ->required()
+                                    ->placeholder("Hp, Dell, Pc Top...")
+                                    ->maxLength(255),
+
+                                Forms\Components\Textarea::make('description')
+                                    ->label('Descrição')
+                                    ->rows(3)
+                                    ->placeholder('Descrição do computador, ex: i5 8gb ram 256ssd, ou senha....')
+                                    ->maxLength(65535)
+                            ]),
+                            Forms\Components\Section::make('Local')->description('Informações sobre o local do computador')->schema([
+                                Forms\Components\Select::make('location_id')
+                                    ->label('Localização')
+                                    ->relationship('location', 'sector')
+                                    ->searchable('sector')
+                                    ->preload()
+                                    ->required()
+                                    ->optionsLimit(20)
+                                    ->placeholder('Selecione a localização')
+                            ]),
+                        ]),
+                    Forms\Components\Section::make('Os')->description('Informações sobre a ordem de serviço')->schema([
+                        Forms\Components\TextInput::make('defect')
+                            ->label('Defeito')
+                            ->maxLength(255),
+
+                        Forms\Components\Select::make('tecs')
+                            ->label('Tecnicos')
+                            ->relationship('tecs', 'name', fn(Builder $query) => $query->where('status', '=', '1')->where('occupation', '=', 'tecnico'))
+                            ->preload()
+                            ->multiple()
+                            ->maxItems(3),
+                        Forms\Components\RichEditor::make('repair_note')
+                            ->label('Nota')
+                            ->maxLength(255)
+                            ->default('Não informado')->columnSpan(2),
+                    ])->columns(2),
 
 
+                ])->columns(1)
             ])->columns(2);
     }
 
@@ -122,6 +158,24 @@ class ServiceOrderResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Registrado em')
+                    ->since()->color(function ($record): string {
+                        $creationDate = $record->created_at;
+
+                        // Se a diferença for de 1 dia ou mais, fica vermelho
+                        if ($creationDate->diffInDays(now()) >= 1) {
+                            return 'danger';
+                        }
+
+                        // Se a diferença for menor que 1 hora, fica verde
+                        if ($creationDate->diffInHours(now()) < 1) {
+                            return 'success';
+                        }
+
+                        // Caso contrário (entre 1 hora e 1 dia), fica amarelo
+                        return 'warning';
+                    })->sortable(),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->label('Editado em')
                     ->dateTime()

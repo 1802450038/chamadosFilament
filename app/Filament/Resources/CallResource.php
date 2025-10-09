@@ -53,26 +53,32 @@ class CallResource extends Resource
                         ->default(Date(now())),
                 ])->columns(3)->columnSpan(2),
 
-
-                Forms\Components\Section::make('Local')->description('Informações do local')->schema([
-                    Forms\Components\Select::make('location_id')
-                        ->label('Local')
-                        ->relationship('location', 'sector')
-                        ->searchable()
-                        ->preload()
-                        ->optionsLimit(20)
-                        ->required(),
-                ])->columnSpan(1),
-
-                Forms\Components\Section::make('Tecnicos')->description('Tecnicos do chamado')->schema([
-                    Forms\Components\Select::make('tecs')
-                        ->label('Tecnicos')
-                        ->relationship('tecs', 'name', fn(Builder $query) => $query->where('status', '=', '1')->where('occupation', '=', 'tecnico'))
-                        ->preload()
-                        ->multiple()
-                        ->maxItems(3)
-                ])->columnSpan(1),
-
+                Forms\Components\Grid::make()
+                    ->columns([
+                        'xsm' => 1,
+                        'sm' => 2,
+                        'md' => 2,
+                        'lg' => 2,
+                        'xl' => 2,
+                    ])->schema([
+                        Forms\Components\Section::make('Local')->description('Informações do local')->schema([
+                            Forms\Components\Select::make('location_id')
+                                ->label('Local')
+                                ->relationship('location', 'sector')
+                                ->searchable()
+                                ->preload()
+                                ->optionsLimit(20)
+                                ->required(),
+                        ])->columnSpan(1),
+                        Forms\Components\Section::make('Tecnicos')->description('Tecnicos do chamado')->schema([
+                            Forms\Components\Select::make('tecs')
+                                ->label('Tecnicos')
+                                ->relationship('tecs', 'name', fn(Builder $query) => $query->where('status', '=', '1')->where('occupation', '=', 'tecnico'))
+                                ->preload()
+                                ->multiple()
+                                ->maxItems(3)
+                        ])->columnSpan(1),
+                    ])->columnSpanFull(),
             ])->columns(2);
     }
 
@@ -143,6 +149,25 @@ class CallResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Registrado em')
+                    ->since()
+                    ->color(function ($record): string {
+                        $creationDate = $record->created_at;
+
+                        // Se a diferença for de 1 dia ou mais, fica vermelho
+                        if ($creationDate->diffInDays(now()) >= 1) {
+                            return 'danger';
+                        }
+
+                        // Se a diferença for menor que 1 hora, fica verde
+                        if ($creationDate->diffInHours(now()) < 1) {
+                            return 'success';
+                        }
+
+                        // Caso contrário (entre 1 hora e 1 dia), fica amarelo
+                        return 'warning';
+                    })->sortable(),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->label('Editado em')
                     ->dateTime()
@@ -175,22 +200,23 @@ class CallResource extends Resource
                     TextEntry::make('request')->label('Solicitante'),
                     TextEntry::make('scheduling')->label('Agendamento'),
                     IconEntry::make('status')->label('Ativo')
-                    ->color(function(Model $record){
-                        if($record->status == '1'){
-                            return "success";
-                        }else {
-                            return "danger";
-                        }
-                    })
-                    ->icon(function(Model $record){
-                        if($record->status == '1'){
-                            return "heroicon-o-check";
-                        }else {
-                            return "heroicon-o-x-mark";
-                        }
-                    }
-                    ) 
-                    
+                        ->color(function (Model $record) {
+                            if ($record->status == '1') {
+                                return "success";
+                            } else {
+                                return "danger";
+                            }
+                        })
+                        ->icon(
+                            function (Model $record) {
+                                if ($record->status == '1') {
+                                    return "heroicon-o-check";
+                                } else {
+                                    return "heroicon-o-x-mark";
+                                }
+                            }
+                        )
+
                 ])->columns(2),
                 Section::make('Local')->schema([
 
@@ -198,18 +224,18 @@ class CallResource extends Resource
                     TextEntry::make('location.sector')->label('Setor'),
                     TextEntry::make('location.address.address')->label('Endereço')->columnSpanFull(),
                     MapEntry::make('map')
-                    ->label("Mapa")
-                    ->defaultZoom(15)
-                    ->defaultLocation(
-                        function (Model $record) {
-                            $coords = [
-                                $record->location->address->lat,
-                                $record->location->address->lng
-                            ];
-                            return $coords;
-                        }
-                    )
-                    ->columnSpanFull(),
+                        ->label("Mapa")
+                        ->defaultZoom(15)
+                        ->defaultLocation(
+                            function (Model $record) {
+                                $coords = [
+                                    $record->location->address->lat,
+                                    $record->location->address->lng
+                                ];
+                                return $coords;
+                            }
+                        )
+                        ->columnSpanFull(),
 
                 ])->columns(2)
             ]);

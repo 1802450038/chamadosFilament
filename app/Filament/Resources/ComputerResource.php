@@ -3,14 +3,17 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ComputerResource\Pages;
+use App\Filament\Resources\ComputerResource\RelationManagers\ServiceOrdersRelationManager;
 use App\Models\Computer;
 use Filament\Forms;
+use Filament\Forms\Components\Tabs\Tab;
 use Filament\Forms\Form;
 use Filament\Infolists\Components\Grid;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
+use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Filters\SelectFilter;
@@ -109,9 +112,6 @@ class ComputerResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('image')
-                    ->label('Imagem')
-                    ->circular(),
                 Tables\Columns\TextColumn::make('patrimony')
                     ->label('Patrimonio')
                     ->icon('heroicon-o-qr-code')
@@ -139,6 +139,9 @@ class ComputerResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Registrado em')
+                    ->since(),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->label('Data atualização')
                     ->dateTime()
@@ -165,7 +168,7 @@ class ComputerResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            ServiceOrdersRelationManager::class,
         ];
     }
 
