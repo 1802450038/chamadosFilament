@@ -91,7 +91,15 @@ class CallResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('id','desc')
+            ->poll('5s')
+            ->striped()
             ->columns([
+                Tables\Columns\TextColumn::make('id')
+                    ->label('Código')
+                    ->badge()
+                    ->color('success')
+                    ->icon('heroicon-o-qr-code'),
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Registrado por')
                     ->numeric()

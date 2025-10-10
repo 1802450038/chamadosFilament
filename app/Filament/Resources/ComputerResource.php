@@ -168,7 +168,7 @@ class ComputerResource extends Resource
     public static function getRelations(): array
     {
         return [
-            ServiceOrdersRelationManager::class,
+            // ServiceOrdersRelationManager::class,
         ];
     }
 
