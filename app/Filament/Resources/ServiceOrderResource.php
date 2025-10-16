@@ -168,7 +168,7 @@ class ServiceOrderResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Registrado em')
-                    ->since()->color(function ($record): string {
+                    ->color(function ($record): string {
                         $creationDate = $record->created_at;
 
                         // Se a diferença for de 1 dia ou mais, fica vermelho
