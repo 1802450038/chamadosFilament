@@ -24,11 +24,11 @@ class ListServiceOrders extends ListRecords
         public function getTabs(): array
     {
         return [
-            'Finalizados' => Tab::make()
+            'Abertos' => Tab::make()
                 ->modifyQueryUsing(fn(Builder $query) => $query->where('active', '=', '1'))
                 ->badge(ServiceOrder::query()->where('active', '=', '1')->count())
                 ->badgeColor('primary')->icon('heroicon-o-check-circle'),
-            'Abertos' => Tab::make()
+            'Finalizados' => Tab::make()
                 ->modifyQueryUsing(fn(Builder $query) => $query->where('active', '=', '0'))
                 ->badge(ServiceOrder::query()->where('active', '=', '0')->count())
                 ->badgeColor('success')->icon('heroicon-o-x-mark')

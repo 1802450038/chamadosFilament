@@ -110,7 +110,7 @@ class ServiceOrderResource extends Resource
                 Section::make('OS')->schema([
                     TextEntry::make('defect')->label('Defeito'),
                     TextEntry::make('repair_note')->html()->label('Nota')
-                ])->columns(2)->description("Informações sobre a ordedem de serviço"),
+                ])->columns(2)->description("Informações sobre a ordem de serviço"),
             ]);
     }
 
