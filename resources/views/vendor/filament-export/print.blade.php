@@ -58,10 +58,6 @@
             <br>
             <hr>
         @endforeach
-        Concluido
-        <br>
-        [ ] - Sim   [ ] - Não
-        <br>
         <br>
         Ass:
         <b><hr></b>
