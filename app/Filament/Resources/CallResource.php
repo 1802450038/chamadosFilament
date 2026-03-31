@@ -151,6 +151,7 @@ class CallResource extends Resource
                     ->label('Local')
                     ->color('gray')
                     ->icon('heroicon-o-map-pin')
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Criado em')

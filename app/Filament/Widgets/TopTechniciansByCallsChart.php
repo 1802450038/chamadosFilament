@@ -14,6 +14,7 @@ class TopTechniciansByCallsChart extends ChartWidget
     {
         // Filtra apenas usuários que são técnicos e conta a relação 'calls'
         $data = User::where('occupation', 'tecnico')
+            ->where('status', '=', '1')
             ->withCount('calls') // Assumindo que a relação no User model se chama 'calls'
             ->orderByDesc('calls_count')
             ->limit(5)

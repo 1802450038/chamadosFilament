@@ -13,8 +13,9 @@ class TopTechniciansByServiceOrdersChart extends ChartWidget
     protected function getData(): array
     {
         $data = User::where('occupation', 'tecnico')
-            ->withCount('serviceorders') // Assumindo que a relação no User model se chama 'serviceorders'
-            ->orderByDesc('serviceorders_count')
+            ->where('status', '=', '1')
+            ->withCount('orders') // Assumindo que a relação no User model se chama 'serviceorders'
+            ->orderByDesc('orders_count')
             ->limit(5)
             ->get();
 
@@ -22,7 +23,7 @@ class TopTechniciansByServiceOrdersChart extends ChartWidget
             'datasets' => [
                 [
                     'label' => 'Ordens de Serviço',
-                    'data' => $data->pluck('serviceorders_count')->toArray(),
+                    'data' => $data->pluck('orders_count')->toArray(),
                     'backgroundColor' => '#4BC0C0',
                     'borderColor' => '#A3E4D7',
                 ],
