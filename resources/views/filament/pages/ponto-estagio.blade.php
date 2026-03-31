@@ -250,7 +250,7 @@
                 <button class="btn-back" onclick="voltarSetup()">← Voltar</button>
                 <span class="toolbar-title">Folha de Ponto — Estagiário</span>
                 <span id="toolbar-badge" style="font-size:0.6rem;opacity:0.45;letter-spacing:0.1em;"></span>
-                <button class="btn-tool primary" onclick="window.print()">Imprimir / Gerar PDF</button>
+                <button class="btn-tool primary" onclick="window.print()">Imprimir 🖨️/ Gerar PDF 📄</button>
                 <button class="btn-tool" onclick="exportarExcel()">Exportar Excel</button>
             </div>
 
